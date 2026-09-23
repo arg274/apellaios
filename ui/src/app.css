@@ -400,17 +400,17 @@
     --label-3: rgb(from var(--tint) calc(r + 110) calc(g + 110) calc(b + 115));
     --divider: color-mix(in oklab, var(--tint), white 18%);
   }
+  /* Light tints take a darkened tint for secondary text, mixed in oklab (by perceived lightness)
+     so it stays clearly softer than the primary label. 50% / 58% keeps pale tints near the
+     untinted greys while mid-toned tints, where even the title sits near 4.5:1, stay readable */
   :root:not(.dark) .tinted {
-    --label-2: color-mix(in oklab, var(--tint) 30%, black);
-    --label-3: color-mix(in oklab, var(--tint) 35%, black);
+    --label-2: color-mix(in oklab, var(--tint) 50%, black);
+    --label-3: color-mix(in oklab, var(--tint) 58%, black);
     --divider: color-mix(in oklab, var(--tint), black 30%);
     --fill-2: rgb(0 0 0 / 0.06);
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
 /*
  * Tint changes crossfade the whole window through a view transition (see ui.svelte.ts). The
  * default 250ms reads as a flash for a full-window colour change; this is closer to Apple's fade.
@@ -421,6 +421,9 @@
   animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
   *::after {
     animation-duration: 1ms !important;
     transition-duration: 1ms !important;
