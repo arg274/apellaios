@@ -24,7 +24,7 @@
       <div class="relative">
         <a
           href={href(`/playlist/${playlist.id}/show`)}
-          class="block shadow-[0_3px_10px_rgb(0_0_0/0.15)]"
+          class="block rounded-art shadow-[0_3px_10px_rgb(0_0_0/0.15)]"
           aria-label={playlist.name}
         >
           <Artwork kind="playlist" record={playlist} {size} {eager} />

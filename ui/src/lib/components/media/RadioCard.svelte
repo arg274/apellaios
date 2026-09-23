@@ -36,7 +36,7 @@
       <div class="relative">
         <button
           type="button"
-          class="block w-full shadow-[0_3px_10px_rgb(0_0_0/0.15)]"
+          class="block w-full rounded-art shadow-[0_3px_10px_rgb(0_0_0/0.15)]"
           aria-label="{t('resources.radio.actions.playNow')}: {radio.name}"
           onclick={() => (current ? player.togglePlay() : player.playRadio(radio))}
         >

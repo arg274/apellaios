@@ -41,7 +41,7 @@
           href={href(`/album/${album.id}/show`)}
           draggable="true"
           ondragstart={dragMusic({ albumIds: [album.id], label: album.name })}
-          class="block shadow-[0_3px_10px_rgb(0_0_0/0.15)] transition-shadow group-hover:shadow-[0_6px_16px_rgb(0_0_0/0.25)]"
+          class="block rounded-art shadow-[0_3px_10px_rgb(0_0_0/0.15)] transition-shadow group-hover:shadow-[0_6px_16px_rgb(0_0_0/0.25)]"
           aria-label={album.name}
         >
           <Artwork kind="album" record={album} {size} {eager} alt="" />
