@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { CircleUser, Info, Keyboard, LogOut, QrCode, UserCog } from '@lucide/svelte'
+  import { Info, Keyboard, LogOut, QrCode, UserCog } from '@lucide/svelte'
   import { DropdownMenu } from 'bits-ui'
   import config from '$lib/config'
-  import { getAvatarUrl } from '$lib/api/subsonic'
   import { t } from '$lib/i18n/index.svelte'
   import { navigate } from '$lib/nav.svelte'
   import { activity } from '$lib/state/activity.svelte'
@@ -15,7 +14,10 @@
 
   let { onnavigate }: { onnavigate?: () => void } = $props()
 
-  const avatar = $derived(auth.user ? getAvatarUrl(auth.user.username, 64) : '')
+  // Only Gravatar gives a real picture (login sends it when enabled); the server's getAvatar
+  // placeholder is the Navidrome logo, so without one draw a generic avatar, coloured like the
+  // blank cover
+  const avatar = $derived(auth.user?.avatar)
   let avatarFailed = $state(false)
   const showLogout = !config.auth || !!config.extAuthLogoutURL
 </script>
@@ -33,7 +35,14 @@
           onerror={() => (avatarFailed = true)}
         />
       {:else}
-        <CircleUser class="size-7 shrink-0 text-label-2" strokeWidth={1.5} />
+        <svg
+          viewBox="0 0 28 28"
+          aria-hidden="true"
+          class="size-7 shrink-0 rounded-full bg-linear-to-b from-cover-top to-cover-bottom text-cover-glyph"
+        >
+          <circle cx="14" cy="11" r="5" fill="currentColor" />
+          <path d="M4.5 24.5a11 11 0 0 1 19 0 13.5 13.5 0 0 1-19 0z" fill="currentColor" />
+        </svg>
       {/if}
       <span class="min-w-0 flex-1">
         <span class="block truncate text-body font-semibold"
