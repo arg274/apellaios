@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Heart, ListMusic, Plus, Sparkles } from '@lucide/svelte'
+  import { ChevronRight, Heart, ListMusic, Plus, Sparkles } from '@lucide/svelte'
+  import { slide } from 'svelte/transition'
   import config from '$lib/config'
   import { addToPlaylist } from '$lib/api/native'
   import { session } from '$lib/api/session'
@@ -36,6 +37,12 @@
 
   let dropTarget = $state<string | null>(null)
 
+  // Folding animates, unless the user asked for less motion
+  const slideDuration =
+    typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches
+      ? 0
+      : 200
+
   const dropHandlers = (pls: Playlist) => {
     if (!canChangeTracks(pls)) return {}
     return {
@@ -65,9 +72,28 @@
   }
 </script>
 
-{#snippet group(title: string, items: Playlist[], actions: boolean)}
-  <div class="mt-5 mb-1 flex items-center justify-between px-2.5">
-    <h2 class="text-subhead font-semibold text-label-3">{title}</h2>
+{#snippet group(section: string, title: string, items: Playlist[], actions: boolean)}
+  {@const open = settings.isSidebarSectionOpen(section)}
+  <div class="group/section mt-5 mb-1 flex items-center justify-between px-2.5">
+    <!-- The title folds the section; the chevron shows on hover, and always while folded -->
+    <h2>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls="sidebar-{section}"
+        class="-mx-1 flex items-center gap-0.5 rounded-md px-1 text-subhead font-semibold text-label-3 hover:text-label"
+        onclick={() => settings.toggleSidebarSection(section)}
+      >
+        {title}
+        <ChevronRight
+          class={cn(
+            'size-3 transition-[rotate,opacity] duration-200',
+            open ? 'rotate-90 opacity-0 group-hover/section:opacity-100' : 'opacity-100',
+          )}
+          strokeWidth={2.5}
+        />
+      </button>
+    </h2>
     {#if actions}
       <div class="flex items-center gap-0.5">
         {#if config.enableFavourites}
@@ -101,33 +127,41 @@
       </div>
     {/if}
   </div>
-  {#if actions}
-    <NavItem
-      href={href('/playlist')}
-      label={t('ui.allPlaylists')}
-      icon={ListMusic}
-      active={currentPath() === '/playlist'}
-    />
+  {#if open}
+    <div
+      id="sidebar-{section}"
+      class="flex flex-col gap-1"
+      transition:slide={{ duration: slideDuration }}
+    >
+      {#if actions}
+        <NavItem
+          href={href('/playlist')}
+          label={t('ui.allPlaylists')}
+          icon={ListMusic}
+          active={currentPath() === '/playlist'}
+        />
+      {/if}
+      {#each items as pls (pls.id)}
+        {@const handlers = dropHandlers(pls)}
+        <NavItem
+          href={href(`/playlist/${pls.id}/show`)}
+          label={pls.name}
+          icon={isSmartPlaylist(pls) ? Sparkles : ListMusic}
+          active={currentPath() === `/playlist/${pls.id}/show`}
+          dropTarget={dropTarget === pls.id}
+          {...handlers}
+        />
+      {/each}
+    </div>
   {/if}
-  {#each items as pls (pls.id)}
-    {@const handlers = dropHandlers(pls)}
-    <NavItem
-      href={href(`/playlist/${pls.id}/show`)}
-      label={pls.name}
-      icon={isSmartPlaylist(pls) ? Sparkles : ListMusic}
-      active={currentPath() === `/playlist/${pls.id}/show`}
-      dropTarget={dropTarget === pls.id}
-      {...handlers}
-    />
-  {/each}
 {/snippet}
 
 <nav
   aria-label={t('menu.playlists')}
   onclickcapture={(e) => (e.target as HTMLElement).closest('a') && onnavigate?.()}
 >
-  {@render group(t('menu.playlists'), mine, true)}
+  {@render group('playlists', t('menu.playlists'), mine, true)}
   {#if shared.length}
-    {@render group(t('menu.sharedPlaylists'), shared, false)}
+    {@render group('shared', t('menu.sharedPlaylists'), shared, false)}
   {/if}
 </nav>

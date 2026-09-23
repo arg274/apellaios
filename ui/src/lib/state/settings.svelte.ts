@@ -22,6 +22,8 @@ interface Settings {
   defaultView: string
   queueOpen: boolean
   sidebarCollapsed: boolean
+  /** Sidebar sections the user folded away, e.g. ['playlists'] */
+  sidebarClosedSections: string[]
 }
 
 const readLegacyKey = (key: string) => {
@@ -80,6 +82,7 @@ class SettingsState {
       defaultView: '/album/recentlyAdded',
       queueOpen: false,
       sidebarCollapsed: false,
+      sidebarClosedSections: [],
     },
     seedFromLegacy,
   )
@@ -184,6 +187,17 @@ class SettingsState {
   }
   set sidebarCollapsed(v: boolean) {
     this.#s.sidebarCollapsed = v
+  }
+
+  isSidebarSectionOpen(section: string): boolean {
+    return !this.#s.sidebarClosedSections.includes(section)
+  }
+
+  toggleSidebarSection(section: string) {
+    const closed = this.#s.sidebarClosedSections
+    this.#s.sidebarClosedSections = closed.includes(section)
+      ? closed.filter((s) => s !== section)
+      : [...closed, section]
   }
 
   /** Whether an optional column is visible; `fallback` is its default */
