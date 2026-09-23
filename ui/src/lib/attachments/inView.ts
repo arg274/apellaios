@@ -20,3 +20,22 @@ export const inView =
     io.observe(el)
     return () => io.disconnect()
   }
+
+/**
+ * Reports whether the element is within `margin` of being visible, each time that changes, so
+ * heavy content (images) can be dropped once it is scrolled well away and restored on return.
+ * Like `inView`, measured against the scrolling <main>.
+ */
+export const nearView =
+  (onChange: (near: boolean) => void, margin = '300px'): Attachment<HTMLElement> =>
+  (el) => {
+    const io = new IntersectionObserver(
+      (entries) => {
+        const last = entries.at(-1)
+        if (last) onChange(last.isIntersecting)
+      },
+      { root: el.closest('main'), rootMargin: margin },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }

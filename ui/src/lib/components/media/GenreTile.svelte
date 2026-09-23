@@ -1,8 +1,10 @@
 <script lang="ts">
   // A browse tile for one genre: its gradient and a small fan of the genre's album covers. The
-  // albums are only fetched once the tile nears the viewport.
+  // albums are only fetched once the tile nears the viewport, and the covers are only in the page
+  // while it stays near: scrolled well away, their images are dropped so a long genre list holds
+  // no more covers than are on screen. Coming back they return from the HTTP cache.
   import type { Album } from '$lib/api/types'
-  import { inView } from '$lib/attachments/inView'
+  import { nearView } from '$lib/attachments/inView'
   import { genreCovers } from '$lib/genreCovers'
   import { href } from '$lib/nav.svelte'
   import { cn } from '$lib/utils/cn'
@@ -20,7 +22,15 @@
     candidates.filter((a) => verdict[a.id] !== 'placeholder').slice(0, FAN_SIZE),
   )
 
-  const load = () => {
+  let near = $state(false)
+  let requested = false
+  // Back to front, so the first (most played) album paints last and sits on top; none while away
+  const shown = $derived(near ? fanned.map((album, i) => ({ album, i })).reverse() : [])
+
+  const onNear = (value: boolean) => {
+    near = value
+    if (!value || requested) return
+    requested = true
     genreCovers(id)
       .then((albums) => (candidates = albums.filter((a) => !a.imageAbsent)))
       .catch(() => {})
@@ -35,7 +45,7 @@
 </script>
 
 <a
-  {@attach inView(load, '100px')}
+  {@attach nearView(onNear, '200px')}
   href={href('/album/all', { filter: JSON.stringify({ genre_id: id }) })}
   class="group relative isolate flex aspect-[16/10] overflow-hidden rounded-xl bg-linear-135 from-[oklch(0.55_0.15_var(--hue))] to-[oklch(0.38_0.12_calc(var(--hue)+40))] p-3 shadow-sm"
   style:--hue={hue}
@@ -46,8 +56,7 @@
     {name}
   </span>
 
-  <!-- Back to front, so the first (most played) album paints last and sits on top -->
-  {#each fanned.map((album, i) => ({ album, i })).reverse() as { album, i } (album.id)}
+  {#each shown as { album, i } (album.id)}
     <div
       class={cn(
         'absolute aspect-square w-[44%] overflow-hidden rounded-md shadow-[0_4px_14px_rgb(0_0_0/0.35)] transition-[rotate,translate,opacity] duration-300 ease-apple',
