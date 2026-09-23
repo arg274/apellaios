@@ -50,6 +50,14 @@ export const artistSongs = (artistId: string) =>
     200,
   )
 
+/** A record label's songs (its first 500), in album order */
+export const labelSongs = (labelTagId: string) =>
+  getAll(
+    'song',
+    { sort: 'album', order: 'ASC', filter: { recordlabel: labelTagId, missing: false } },
+    500,
+  )
+
 export const playlistSongs = (playlistId: string) =>
   getAll('playlistTrack', { sort: 'id', order: 'ASC', filter: { playlist_id: playlistId } })
 
@@ -292,6 +300,16 @@ export function playlistMenu(playlist: Playlist) {
       icon: Download,
       onSelect: () => (ui.download = { resource: 'playlist', record: playlist }),
     },
+  )
+}
+
+/** Actions for a record label's page: play or queue everything released on it */
+export function labelMenu(labelTagId: string) {
+  const source = () => labelSongs(labelTagId)
+  return menu(
+    { label: t('resources.album.actions.playAll'), icon: Play, onSelect: playAll(source) },
+    { label: t('resources.album.actions.shuffle'), icon: Shuffle, onSelect: shuffleAll(source) },
+    ...queueEntries(source, 'album'),
   )
 }
 

@@ -857,6 +857,13 @@
     },
     "copyLink": "Copy Link",
     "noSharesHint": "Share an album, playlist or songs from their \"…\" menu.",
-    "variousArtists": "Various Artists"
+    "variousArtists": "Various Artists",
+    "labelPage": {
+      "allReleases": "All Releases",
+      "latestReleases": "Latest Releases",
+      "notFound": "No label called \"%{name}\"",
+      "notFoundHint": "Its albums may have been retagged or removed."
+    },
+    "recordLabel": "Record Label |||| Record Labels"
   }
 }

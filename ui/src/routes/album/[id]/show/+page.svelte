@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Disc3, Ellipsis, Play, Shuffle } from '@lucide/svelte'
+  import { ChevronRight, Disc3, Ellipsis, Play, Shuffle } from '@lucide/svelte'
   import { page } from '$app/state'
   import config from '$lib/config'
   import { albumMenu, albumSongs, playAll, shuffleAll } from '$lib/actions.svelte'
@@ -29,6 +29,7 @@
   import Spinner from '$lib/components/ui/Spinner.svelte'
   import { iconButtonVariants } from '$lib/components/ui/IconButton.svelte'
   import PageTitle from '$lib/components/layout/PageTitle.svelte'
+  import Barcode from '$lib/components/ui/Barcode.svelte'
 
   const id = $derived(page.params.id!)
 
@@ -74,7 +75,12 @@
   const source = () => albumSongs(id)
   const others = $derived((moreBy.value?.data ?? []).filter((x) => x.id !== id))
   const firstSong = $derived(songs.data[0])
-  const label = $derived(a?.tags?.recordlabel?.join(', '))
+  // Navidrome keeps barcodes on songs, not albums: the first numeric one stands for the release
+  // (taggers sometimes write placeholders like "[none]")
+  const barcode = $derived(
+    songs.data.flatMap((s) => s.tags?.barcode ?? []).find((b) => /^[\d\s-]{7,}$/.test(b)),
+  )
+  const labels = $derived(a?.tags?.recordlabel ?? [])
   const releaseType = $derived(releaseTypeLabel(a?.tags?.releasetype?.join(';') ?? a?.mbzAlbumType))
   const notes = $derived(info.value?.notes?.trim())
   const playingThis = $derived(player.currentSong?.albumId === id)
@@ -229,6 +235,14 @@
     {/if}
   </section>
 
+  {#snippet catalogue()}
+    {#if a.catalogNum}<p>{a.catalogNum}</p>{/if}
+    <!-- Compact: bars and digits start flush with the text above -->
+    {#if barcode}
+      <Barcode value={barcode} height={36} moduleWidth={1} compact class="mt-2" />
+    {/if}
+  {/snippet}
+
   <!-- Apple's release footer -->
   <section class="mt-[34px] flex flex-col pl-3 text-body leading-[18px] text-label-2">
     {#if a.releaseDate || a.date}
@@ -239,8 +253,29 @@
       <!-- The edition ("Deluxe", "Remastered"...) lives here rather than beside the title -->
       {#if edition}· {edition}{/if}
     </p>
-    {#if label || a.catalogNum}
-      <p>{[label, a.catalogNum].filter(Boolean).join(' · ')}</p>
+    {#if labels.length}
+      <!-- As on Apple's album pages: the label gets its own small section below the details, in the
+           primary colour with a chevron so it reads as a way through to its label page. The
+           catalogue number sits under it. -->
+      <div class="mt-[21px]">
+        <h2 class="mb-1 text-subhead leading-[14px] font-semibold uppercase">
+          {t('ui.recordLabel', { smart_count: labels.length })}
+        </h2>
+        {#each labels as name (name)}
+          <a
+            href={href(`/label/${encodeURIComponent(name)}`)}
+            class="group/label flex w-fit items-center text-label"
+          >
+            <span class="group-hover/label:underline">{name}</span>
+            <!-- Lucide's chevron spans x 9-15, y 6-18 of its 24-unit box: a 14px box draws a 7px glyph
+                 with a ~1.2px stroke, and the margins trim the box's empty sides to a 5px gap -->
+            <ChevronRight class="-mr-[5px] size-[14px] shrink-0" strokeWidth={2} />
+          </a>
+        {/each}
+        {@render catalogue()}
+      </div>
+    {:else}
+      {@render catalogue()}
     {/if}
     {#if playingThis}<span class="sr-only">{t('ui.nowPlaying', { _: 'Now Playing' })}</span>{/if}
   </section>
