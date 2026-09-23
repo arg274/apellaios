@@ -69,8 +69,8 @@
       queueVisible && 'xl:pr-[320px]',
     )}
   >
-    <!-- 32px above page titles, as on music.apple.com -->
-    <div class="mx-auto w-full max-w-[1680px] px-4 pb-36 sm:px-6 lg:px-10 lg:pt-8">
+    <!-- 32px above page titles, as on music.apple.com (below the bar on phones too) -->
+    <div class="mx-auto w-full max-w-[1680px] px-4 pt-8 pb-36 sm:px-6 lg:px-10">
       {@render children()}
     </div>
   </main>

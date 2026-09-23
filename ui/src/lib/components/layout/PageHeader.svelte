@@ -15,9 +15,10 @@
   <title>{title} - {BRAND}</title>
 </svelte:head>
 
-<!-- Apple's header-nav: a 34/40 bold title in a 40px row, content 28px below -->
+<!-- Apple's header-nav: a 34/40 bold title in a 40px row, content 28px below. On phones the
+     actions drop below the title, the search field on a line of its own and the rest after it -->
 <header
-  class={cn('mb-7 flex min-h-10 flex-wrap items-center justify-between gap-x-6 gap-y-3', className)}
+  class={cn('mb-7 flex min-h-10 flex-wrap items-center justify-between gap-x-6 gap-y-5', className)}
 >
   <div class="min-w-0">
     <h1 class="text-[34px] leading-10 font-bold text-label">{title}</h1>
@@ -26,7 +27,7 @@
     {/if}
   </div>
   {#if actions}
-    <div class="flex flex-wrap items-center gap-2">
+    <div class="flex w-full flex-wrap items-center gap-2 sm:w-auto">
       {@render actions()}
     </div>
   {/if}

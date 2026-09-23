@@ -29,7 +29,7 @@
   }, config.uiSearchDebounceMs)
 </script>
 
-<label class={cn('relative block w-56', className)}>
+<label class={cn('relative block w-full sm:w-56', className)}>
   <span class="sr-only">{placeholder}</span>
   <Search
     class="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-label-2"
