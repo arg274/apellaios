@@ -37,7 +37,7 @@
 <a
   {@attach inView(load, '100px')}
   href={href('/album/all', { filter: JSON.stringify({ genre_id: id }) })}
-  class="group relative isolate flex aspect-[16/10] overflow-hidden rounded-xl bg-linear-135 from-[oklch(0.55_0.15_var(--hue))] to-[oklch(0.38_0.12_calc(var(--hue)+40))] p-3 shadow-sm transition-transform hover:scale-[1.02]"
+  class="group relative isolate flex aspect-[16/10] overflow-hidden rounded-xl bg-linear-135 from-[oklch(0.55_0.15_var(--hue))] to-[oklch(0.38_0.12_calc(var(--hue)+40))] p-3 shadow-sm"
   style:--hue={hue}
 >
   <span
@@ -69,4 +69,9 @@
       />
     </div>
   {/each}
+
+  <!-- Hover dims the tile like the album and artist cards; the name (z-10) stays above it -->
+  <span
+    class="pointer-events-none absolute inset-0 transition-colors duration-200 group-hover:bg-black/25"
+  ></span>
 </a>

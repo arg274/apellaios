@@ -37,10 +37,12 @@
       ondragstart={dragMusic({ artistIds: [artist.id], label: artist.name })}
       class="group flex min-w-0 flex-col items-center gap-2 text-center"
     >
-      <div
-        class="w-full transition-transform duration-300 ease-[var(--ease-spring)] group-hover:scale-[1.03]"
-      >
+      <!-- Hover dims the portrait like the album and playlist cards, rather than scaling it -->
+      <div class="relative w-full">
         <Artwork kind="artist" record={artist as Artist} {size} {eager} round alt="" />
+        <span
+          class="absolute inset-0 rounded-full transition-colors duration-200 group-hover:bg-black/25"
+        ></span>
       </div>
       <div class="w-full min-w-0">
         <div class="truncate text-body text-label">{artist.name}</div>
