@@ -36,7 +36,7 @@
   <AlertDialog.Portal>
     <AlertDialog.Overlay class="fixed inset-0 z-50 animate-fade bg-scrim" />
     <AlertDialog.Content
-      class="glass-menu fixed top-1/2 left-1/2 z-50 w-[calc(100vw-2rem)] max-w-sm animate-pop -translate-x-1/2 -translate-y-1/2 rounded-2xl p-5 text-center text-label outline-none"
+      class="glass-menu fixed top-1/2 left-1/2 z-50 w-[calc(100vw-2rem)] max-w-sm origin-floating -translate-x-1/2 -translate-y-1/2 animate-pop rounded-2xl p-5 text-center text-label outline-none"
     >
       <AlertDialog.Title class="text-title-3 font-bold">{title}</AlertDialog.Title>
       {#if message}

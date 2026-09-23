@@ -119,9 +119,8 @@
           href={href('/album/all', {
             filter: JSON.stringify({ genre_id: (genre as Genre & { id: string }).id }),
           })}
-          class="relative flex aspect-[16/10] items-end overflow-hidden rounded-xl p-3 text-title-3 font-bold text-white shadow-sm transition-transform hover:scale-[1.02]"
-          style:background="linear-gradient(135deg, oklch(0.55 0.15 {hue}), oklch(0.38 0.12 {hue +
-            40}))"
+          class="relative flex aspect-[16/10] items-end overflow-hidden rounded-xl bg-linear-135 from-[oklch(0.55_0.15_var(--hue))] to-[oklch(0.38_0.12_calc(var(--hue)+40))] p-3 text-title-3 font-bold text-white shadow-sm transition-transform hover:scale-[1.02]"
+          style:--hue={hue}
         >
           {genre.name}
         </a>

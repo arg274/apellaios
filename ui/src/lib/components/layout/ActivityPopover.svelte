@@ -84,7 +84,7 @@
       side="top"
       align="end"
       sideOffset={8}
-      class="glass-menu z-50 w-80 animate-pop rounded-2xl p-4 text-body"
+      class="glass-menu z-50 w-80 origin-floating animate-pop rounded-2xl p-4 text-body"
     >
       <h3 class="mb-3 text-title-3 font-bold text-label">{t('activity.title')}</h3>
 

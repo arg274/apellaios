@@ -59,7 +59,7 @@
 
   <form
     onsubmit={submit}
-    class="glass relative w-full max-w-sm animate-pop rounded-3xl px-8 pt-8 pb-7 text-label"
+    class="glass relative w-full max-w-sm origin-floating animate-pop rounded-3xl px-8 pt-8 pb-7 text-label"
     novalidate
   >
     <div class="mb-6 flex flex-col items-center gap-3 text-center">

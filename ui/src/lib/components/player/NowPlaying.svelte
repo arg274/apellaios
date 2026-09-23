@@ -93,7 +93,7 @@
               scrubbing = null
             }}
           />
-          <div class="mt-1 flex justify-between text-callout text-white/60 tabular">
+          <div class="mt-1 flex justify-between text-callout text-white/60 tabular-nums">
             <span>{formatTrackDuration(scrubbing ?? player.currentTime)}</span>
             <span
               >-{formatTrackDuration(

@@ -97,7 +97,7 @@
       side="top"
       align="end"
       sideOffset={8}
-      class="glass-menu z-50 w-96 max-w-[calc(100vw-16px)] animate-pop rounded-2xl p-2 text-body"
+      class="glass-menu z-50 w-96 max-w-[calc(100vw-16px)] origin-floating animate-pop rounded-2xl p-2 text-body"
     >
       <h3 class="px-2 pt-2 pb-1 text-title-3 font-bold text-label">{t('nowPlaying.title')}</h3>
       {#if entries.length === 0}

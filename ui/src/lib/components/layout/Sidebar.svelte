@@ -70,7 +70,7 @@
 </script>
 
 <aside
-  class={cn('glass-sidebar flex h-full w-[260px] flex-col border-r border-sidebar-edge', className)}
+  class={cn('flex h-full w-[260px] flex-col border-r border-sidebar-edge glass-sidebar', className)}
   aria-label={t('ui.sidebar')}
 >
   <!-- Measured on music.apple.com: a 72px logo block inset 8px, 20px side padding, a 20px-tall

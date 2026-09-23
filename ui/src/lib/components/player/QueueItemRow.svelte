@@ -52,7 +52,7 @@
     </div>
   </button>
   {#if item.kind === 'song'}
-    <span class="text-callout text-label-3 tabular group-hover:hidden"
+    <span class="text-callout text-label-3 tabular-nums group-hover:hidden"
       >{formatTrackDuration(item.song.duration)}</span
     >
   {/if}

@@ -33,7 +33,7 @@
     <Dialog.Overlay class="fixed inset-0 z-50 animate-fade bg-scrim" />
     <Dialog.Content
       class={cn(
-        'glass-menu fixed top-1/2 left-1/2 z-50 flex max-h-[min(85dvh,52rem)] w-[calc(100vw-2rem)] animate-pop -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl text-label outline-none',
+        'glass-menu fixed top-1/2 left-1/2 z-50 flex max-h-[min(85dvh,52rem)] w-[calc(100vw-2rem)] origin-floating -translate-x-1/2 -translate-y-1/2 animate-pop flex-col rounded-2xl text-label outline-none',
         widths[size],
         className,
       )}

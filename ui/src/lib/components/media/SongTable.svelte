@@ -214,7 +214,7 @@
     {:else if song.missing}
       <TriangleAlert class="size-3.5 text-warning group-hover:hidden" />
     {:else}
-      <span class="leading-[18px] text-label-2 tabular group-hover:hidden">
+      <span class="leading-[18px] text-label-2 tabular-nums group-hover:hidden">
         {variant === 'album' ? song.trackNumber || '' : numberOffset + index + 1}
       </span>
     {/if}
@@ -275,9 +275,9 @@
   {:else if c === 'year'}
     {song.year || ''}
   {:else if c === 'duration'}
-    <span class="tabular">{formatTrackDuration(song.duration)}</span>
+    <span class="tabular-nums">{formatTrackDuration(song.duration)}</span>
   {:else if c === 'playCount'}
-    <span class="tabular">{song.playCount || ''}</span>
+    <span class="tabular-nums">{song.playCount || ''}</span>
   {:else if c === 'playDate'}
     {song.playDate ? formatDateTime(song.playDate) : ''}
   {:else if c === 'createdAt'}
@@ -285,13 +285,13 @@
   {:else if c === 'quality'}
     <QualityBadge {song} />
   {:else if c === 'size'}
-    <span class="tabular">{formatBytes(song.size)}</span>
+    <span class="tabular-nums">{formatBytes(song.size)}</span>
   {:else if c === 'bitRate'}
-    <span class="tabular">{song.bitRate || ''}</span>
+    <span class="tabular-nums">{song.bitRate || ''}</span>
   {:else if c === 'channels'}
-    <span class="tabular">{song.channels || ''}</span>
+    <span class="tabular-nums">{song.channels || ''}</span>
   {:else if c === 'bpm'}
-    <span class="tabular">{song.bpm || ''}</span>
+    <span class="tabular-nums">{song.bpm || ''}</span>
   {:else if c === 'genre'}
     <span class="block truncate">{song.genre}</span>
   {:else if c === 'comment'}

@@ -14,7 +14,7 @@
   <Dialog.Portal>
     <Dialog.Overlay class="fixed inset-0 z-50 animate-fade bg-black/80 backdrop-blur-xl" />
     <Dialog.Content
-      class="fixed inset-0 z-50 flex animate-pop flex-col items-center justify-center gap-4 p-8 outline-none"
+      class="fixed inset-0 z-50 flex origin-floating animate-pop flex-col items-center justify-center gap-4 p-8 outline-none"
       onclick={() => (open = false)}
     >
       <Dialog.Title class="sr-only">{title}</Dialog.Title>

@@ -40,7 +40,7 @@
         page = 1
       }}
     />
-    <span class="tabular">
+    <span class="tabular-nums">
       {t('ra.navigation.page_range_info', { offsetBegin: from, offsetEnd: to, total })}
     </span>
   </div>
@@ -61,7 +61,7 @@
               <Pagination.Page
                 page={p}
                 class={cn(
-                  'flex h-7 min-w-7 items-center justify-center rounded-full px-2 tabular hover:bg-hover',
+                  'flex h-7 min-w-7 items-center justify-center rounded-full px-2 tabular-nums hover:bg-hover',
                   currentPage === p.value && 'bg-fill font-semibold text-label',
                 )}
               >

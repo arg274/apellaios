@@ -43,7 +43,7 @@
 >
   {#if expanded}
     <div
-      class="pointer-events-none absolute inset-x-0 -top-3.5 flex justify-between text-footnote leading-[13px] font-semibold text-label tabular"
+      class="pointer-events-none absolute inset-x-0 -top-3.5 flex justify-between text-footnote leading-[13px] font-semibold text-label tabular-nums"
     >
       <span>{formatTrackDuration(position)}</span>
       <span>-{formatTrackDuration(Math.max(0, duration - position))}</span>

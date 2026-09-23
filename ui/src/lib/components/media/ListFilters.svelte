@@ -100,7 +100,7 @@
       align="end"
       sideOffset={6}
       collisionPadding={12}
-      class="glass-menu z-50 flex max-h-[min(70dvh,36rem)] w-80 animate-pop flex-col rounded-2xl text-body"
+      class="glass-menu z-50 flex max-h-[min(70dvh,36rem)] w-80 origin-floating animate-pop flex-col rounded-2xl text-body"
     >
       <div class="flex min-h-0 flex-col gap-4 overflow-y-auto p-4">
         {#each fields as field (field.key)}

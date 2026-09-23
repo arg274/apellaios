@@ -21,7 +21,7 @@
 </script>
 
 <aside
-  class={cn('glass-sidebar flex-col border-l border-sidebar-edge', className)}
+  class={cn('flex-col border-l border-sidebar-edge glass-sidebar', className)}
   aria-label={t('ui.upNext')}
 >
   <header class="flex h-[72px] shrink-0 items-center justify-between gap-2 px-5">

@@ -41,11 +41,8 @@
 <div class={cn('relative text-body leading-4 text-label', className)}>
   <div
     bind:this={el}
-    class="[&_a]:text-accent [&_a]:hover:underline"
-    style:display={expanded ? 'block' : '-webkit-box'}
-    style:-webkit-line-clamp={expanded ? 'none' : lines}
-    style:-webkit-box-orient="vertical"
-    style:overflow="hidden"
+    class={cn('[&_a]:text-accent [&_a]:hover:underline', !expanded && 'line-clamp-(--lines)')}
+    style:--lines={lines}
   >
     {#if html}
       <!-- eslint-disable-next-line svelte/no-at-html-tags -- sanitised with DOMPurify -->
