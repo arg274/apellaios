@@ -56,10 +56,12 @@
       {title}
     {/if}
   </h2>
+  <!-- A scroller clips everything outside it, so it reaches 16px past the column (and 12px up,
+       16px down) for the artwork's hover shadow, padded back so the layout stays put -->
   <div
     bind:this={scroller}
     onscroll={update}
-    class="-mx-1 scrollbar-none flex snap-x snap-mandatory gap-5 overflow-x-auto px-1 pb-2 [&>*]:shrink-0 [&>*]:snap-start"
+    class="-mx-4 -mt-3 -mb-4 scrollbar-none flex snap-x snap-mandatory scroll-px-4 gap-5 overflow-x-auto px-4 pt-3 pb-6 [&>*]:shrink-0 [&>*]:snap-start"
   >
     {@render children()}
   </div>
