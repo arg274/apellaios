@@ -19,6 +19,7 @@
   let expanded = $state(false)
   let el = $state<HTMLElement | null>(null)
   let overflowing = $state(false)
+  let moreWidth = $state(0)
 
   const safe = $derived(html ? sanitizeHtml(text) : '')
 
@@ -36,13 +37,18 @@
 
 <!--
   Apple's clamped editorial text: MORE sits at the end of the last visible line, the words under
-  it fading into the page colour.
+  it fading out.
 -->
 <div class={cn('relative text-body leading-4 text-label', className)}>
   <div
     bind:this={el}
-    class={cn('[&_a]:text-accent [&_a]:hover:underline', !expanded && 'line-clamp-(--lines)')}
+    class={cn(
+      '[&_a]:text-accent [&_a]:hover:underline',
+      !expanded && 'line-clamp-(--lines)',
+      overflowing && !expanded && 'fade-under-more',
+    )}
     style:--lines={lines}
+    style:--more="{moreWidth}px"
   >
     {#if html}
       <!-- eslint-disable-next-line svelte/no-at-html-tags -- sanitised with DOMPurify -->
@@ -54,7 +60,8 @@
   {#if overflowing && !expanded}
     <button
       type="button"
-      class="absolute right-0 bottom-0 bg-gradient-to-r from-transparent via-page via-40% to-page pl-10 text-subhead leading-4 font-semibold text-label uppercase hover:text-accent"
+      bind:clientWidth={moreWidth}
+      class="absolute right-0 bottom-0 text-subhead leading-4 font-semibold text-label uppercase hover:text-accent"
       onclick={() => (expanded = true)}
     >
       {t('ui.showMore')}

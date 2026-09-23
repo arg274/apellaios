@@ -377,6 +377,21 @@
   );
 }
 
+/*
+ * The end of a clamped text's last line fading out under its MORE button (--more: the button's
+ * width). A mask rather than a gradient backdrop, so it suits whatever the text sits on.
+ */
+@utility fade-under-more {
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - 1lh) no-repeat,
+    linear-gradient(
+        to left,
+        transparent calc(var(--more) + 0.25rem),
+        #000 calc(var(--more) + 2.75rem)
+      )
+      bottom / 100% 1lh no-repeat;
+}
+
 @utility scrollbar-none {
   scrollbar-width: none;
   &::-webkit-scrollbar {
