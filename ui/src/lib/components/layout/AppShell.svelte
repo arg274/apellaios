@@ -1,8 +1,6 @@
 <script lang="ts">
-  import { Menu } from '@lucide/svelte'
   import type { Snippet } from 'svelte'
   import { afterNavigate, beforeNavigate } from '$app/navigation'
-  import { t } from '$lib/i18n/index.svelte'
   import { player } from '$lib/player/player.svelte'
   import { settings } from '$lib/state/settings.svelte'
   import { ui } from '$lib/state/ui.svelte'
@@ -13,6 +11,7 @@
   import NowPlaying from '$lib/components/player/NowPlaying.svelte'
   import DialogHost from '$lib/components/dialogs/DialogHost.svelte'
   import Hotkeys from './Hotkeys.svelte'
+  import MobileNav from './MobileNav.svelte'
   import Sidebar from './Sidebar.svelte'
 
   let { children }: { children: Snippet } = $props()
@@ -60,37 +59,16 @@
   <!-- Desktop sidebar: glass over the (tinted) page, as on music.apple.com -->
   <Sidebar class="fixed inset-y-0 left-0 z-30 hidden lg:flex" />
 
-  <!-- Mobile drawer -->
-  {#if ui.mobileNavOpen}
-    <button
-      type="button"
-      aria-label={t('ui.closeNav')}
-      class="fixed inset-0 z-40 animate-fade bg-scrim lg:hidden"
-      onclick={() => (ui.mobileNavOpen = false)}
-    ></button>
-    <Sidebar
-      class="fixed inset-y-0 left-0 z-50 flex animate-slide-up shadow-2xl lg:hidden"
-      onnavigate={() => (ui.mobileNavOpen = false)}
-    />
-  {/if}
+  <!-- Phone navigation: a glass bar the page scrolls under, opening into a full-screen sheet -->
+  <MobileNav />
 
   <main
     bind:this={main}
     class={cn(
-      'h-full overflow-y-auto overscroll-contain lg:pl-[260px]',
+      'h-full overflow-y-auto overscroll-contain pt-topbar lg:pt-0 lg:pl-[260px]',
       queueVisible && 'xl:pr-[320px]',
     )}
   >
-    <div class="sticky top-0 z-20 flex h-12 items-center px-3 lg:hidden">
-      <button
-        type="button"
-        aria-label={t('ui.openNav')}
-        class="glass flex size-9 items-center justify-center rounded-full"
-        onclick={() => (ui.mobileNavOpen = true)}
-      >
-        <Menu class="size-5" />
-      </button>
-    </div>
     <!-- 32px above page titles, as on music.apple.com -->
     <div class="mx-auto w-full max-w-[1680px] px-4 pb-36 sm:px-6 lg:px-10 lg:pt-8">
       {@render children()}

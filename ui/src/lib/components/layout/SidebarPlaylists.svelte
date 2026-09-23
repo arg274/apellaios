@@ -13,6 +13,7 @@
   import { toast } from '$lib/state/toast.svelte'
   import { cn } from '$lib/utils/cn'
   import NavItem from './NavItem.svelte'
+  import { navGap, navSheet } from './navSheet'
 
   let { onnavigate }: { onnavigate?: () => void } = $props()
 
@@ -70,6 +71,9 @@
       },
     }
   }
+
+  const inSheet = navSheet()
+  const gap = $derived(navGap(inSheet()))
 </script>
 
 {#snippet group(section: string, title: string, items: Playlist[], actions: boolean)}
@@ -130,7 +134,7 @@
   {#if open}
     <div
       id="sidebar-{section}"
-      class="flex flex-col gap-1"
+      class={cn('flex flex-col', gap)}
       transition:slide={{ duration: slideDuration }}
     >
       {#if actions}

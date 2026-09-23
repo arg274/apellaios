@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Component, Snippet } from 'svelte'
   import { cn } from '$lib/utils/cn'
+  import { navSheet } from './navSheet'
 
   let {
     href,
@@ -26,15 +27,20 @@
     /** Highlights the item while something droppable hovers it */
     dropTarget?: boolean
   } = $props()
+
+  const inSheet = navSheet()
+  const sheet = $derived(inSheet())
 </script>
 
 <!-- Measured on music.apple.com: 36px row, 8px radius, a 24px icon box (16px glyph) at x=6 and the
-     label at x=34; the icon takes the key colour only on the selected row -->
+     label at x=34; the icon takes the key colour only on the selected row. In the phone navigation
+     sheet, Apple's touch sizes: 42px rows and 16px labels -->
 <a
   {href}
   aria-current={active ? 'page' : undefined}
   class={cn(
-    'group flex h-9 items-center gap-1 rounded-lg px-1.5 text-[14px] leading-5 text-label transition-colors',
+    'group flex items-center gap-1 rounded-lg px-1.5 text-label transition-colors',
+    sheet ? 'h-[42px] text-[16px] leading-[22px]' : 'h-9 text-[14px] leading-5',
     active ? 'bg-selected font-semibold' : 'hover:bg-hover',
     dropTarget && 'bg-accent/20 ring-2 ring-accent ring-inset',
     className,
