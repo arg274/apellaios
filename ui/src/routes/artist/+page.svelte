@@ -7,6 +7,7 @@
     LayoutGrid,
     List as ListIcon,
     MicVocal,
+    Users,
   } from '@lucide/svelte'
   import config from '$lib/config'
   import { artistMenu } from '$lib/actions.svelte'
@@ -145,6 +146,7 @@
       value={role}
       options={roleOptions}
       label={t('resources.artist.fields.role')}
+      icon={Users}
       class="h-7"
       onValueChange={(v) => params.patchFilter({ role: v })}
     />

@@ -1,6 +1,7 @@
 <script lang="ts" generics="V extends string">
   import { Select } from 'bits-ui'
   import { Check, ChevronsUpDown } from '@lucide/svelte'
+  import type { Component } from 'svelte'
   import { cn } from '$lib/utils/cn'
   import { menuContent, menuItem } from './menu/styles'
 
@@ -12,6 +13,7 @@
     id,
     name,
     label,
+    icon: Icon,
     class: className,
     onValueChange,
   }: {
@@ -22,6 +24,8 @@
     id?: string
     name?: string
     label?: string
+    /** Shown instead of the value on phones, where a toolbar has no room for it */
+    icon?: Component
     class?: string
     onValueChange?: (value: V) => void
   } = $props()
@@ -42,13 +46,15 @@
     aria-label={label}
     class={cn(
       'inline-flex h-8 min-w-32 items-center justify-between gap-2 rounded-lg bg-fill-2 px-3 text-body text-label ring-1 ring-divider ring-inset hover:bg-fill disabled:opacity-40',
+      Icon && 'max-sm:size-7 max-sm:min-w-0 max-sm:justify-center max-sm:px-0',
       className,
     )}
   >
-    <span class={cn('truncate', !selectedLabel && 'text-label-3')}
+    {#if Icon}<Icon class="size-3.5 shrink-0 sm:hidden" />{/if}
+    <span class={cn('truncate', !selectedLabel && 'text-label-3', Icon && 'max-sm:sr-only')}
       >{selectedLabel ?? placeholder}</span
     >
-    <ChevronsUpDown class="size-3.5 shrink-0 text-label-2" />
+    <ChevronsUpDown class={cn('size-3.5 shrink-0 text-label-2', Icon && 'max-sm:hidden')} />
   </Select.Trigger>
   <Select.Portal>
     <!-- At least as wide as the select box (and the menus' usual 200px), aligned to its left edge -->

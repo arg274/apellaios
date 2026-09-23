@@ -88,12 +88,15 @@
 <Popover.Root>
   <Popover.Trigger
     class={cn(
-      'inline-flex h-7 items-center gap-1.5 rounded-lg px-3 text-callout font-medium transition-colors',
+      'inline-flex h-7 items-center gap-1.5 rounded-lg px-3 text-callout font-medium transition-colors max-sm:size-7 max-sm:justify-center max-sm:px-0',
       active ? 'bg-accent text-on-accent' : 'bg-fill text-label hover:bg-fill/80',
     )}
   >
     <ListFilter class="size-3.5" />
-    {t('ui.filter')}{#if active}&nbsp;({active}){/if}
+    <!-- Icon only on phones; the key colour still shows that filters are on -->
+    <span class="max-sm:sr-only"
+      >{t('ui.filter')}{#if active}&nbsp;({active}){/if}</span
+    >
   </Popover.Trigger>
   <Popover.Portal>
     <Popover.Content

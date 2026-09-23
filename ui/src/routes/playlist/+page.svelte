@@ -1,5 +1,13 @@
 <script lang="ts">
-  import { Heart, LayoutGrid, List as ListIcon, ListMusic, Plus, Sparkles } from '@lucide/svelte'
+  import {
+    Heart,
+    LayoutGrid,
+    List as ListIcon,
+    ListMusic,
+    Plus,
+    Sparkles,
+    UserRound,
+  } from '@lucide/svelte'
   import config from '$lib/config'
   import { playlistMenu } from '$lib/actions.svelte'
   import { getAll, update } from '$lib/api/rest'
@@ -113,6 +121,7 @@
         value={(params.filter.owner_id as string) ?? ''}
         options={ownerOptions}
         label={t('resources.playlist.fields.ownerName')}
+        icon={UserRound}
         class="h-7"
         onValueChange={(v) => params.patchFilter({ owner_id: v || undefined })}
       />
