@@ -11,7 +11,10 @@
     children,
   }: {
     title: string
-    /** "See all" target; the title becomes a link with a chevron, like Apple's shelves */
+    /**
+     * "See all" target: while the shelf holds more than fits, the title becomes a link with a
+     * chevron, like Apple's shelves
+     */
     href?: string
     class?: string
     children: Snippet
@@ -41,7 +44,7 @@
 
 <section class={cn('group/shelf relative', className)}>
   <h2 class="mb-3 text-title-2 font-bold text-label">
-    {#if seeAll}
+    {#if seeAll && (canLeft || canRight)}
       <a
         href={seeAll}
         class="inline-flex items-center gap-0.5 hover:opacity-80"

@@ -794,7 +794,8 @@
     "appearsOn": "Appears On",
     "discography": {
       "albums": "Albums",
-      "singles": "Singles & EPs",
+      "eps": "EPs",
+      "singles": "Singles",
       "live": "Live Albums",
       "compilations": "Compilations",
       "soundtracks": "Soundtracks",

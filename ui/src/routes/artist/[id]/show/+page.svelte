@@ -10,10 +10,12 @@
   import { coverArtUrl, getArtistInfo, getTopSongs } from '$lib/api/subsonic'
   import type { Song } from '$lib/api/types'
   import { Loader } from '$lib/data.svelte'
-  import { discography, type ShelfKind } from '$lib/discography'
+  import { artistAlbums, discography, SHELF_TITLE } from '$lib/discography'
   import { t } from '$lib/i18n/index.svelte'
+  import { href } from '$lib/nav.svelte'
   import { player } from '$lib/player/player.svelte'
   import { ui } from '$lib/state/ui.svelte'
+  import { cn } from '$lib/utils/cn'
   import { isLastFmURL } from '$lib/utils/urls'
   import PageTitle from '$lib/components/layout/PageTitle.svelte'
   import ActionMenu from '$lib/components/ui/menu/ActionMenu.svelte'
@@ -38,19 +40,7 @@
     (id, signal) => getOne('artist', id, { signal }),
     { watch: ['artist'], ids: () => ({ artist: [id] }) },
   )
-  // Everything the artist is credited on, like the legacy page (artist_id matches any role)
-  const albums = new Loader(
-    () => id,
-    (id, signal) =>
-      getList('album', {
-        perPage: 500,
-        sort: 'max_year',
-        order: 'DESC',
-        filter: { artist_id: id },
-        signal,
-      }),
-    { watch: ['album'] },
-  )
+  const albums = new Loader(() => id, artistAlbums, { watch: ['album'] })
   const info = new Loader(
     () => (config.enableExternalServices ? id : null),
     (id) => getArtistInfo(id),
@@ -98,17 +88,8 @@
 
   let lightbox = $state(false)
   let about = $state(false)
-
-  const shelfTitle: Record<ShelfKind, string> = {
-    albums: 'ui.discography.albums',
-    singles: 'ui.discography.singles',
-    live: 'ui.discography.live',
-    compilations: 'ui.discography.compilations',
-    soundtracks: 'ui.discography.soundtracks',
-    remixes: 'ui.discography.remixes',
-    other: 'ui.discography.other',
-    appearsOn: 'ui.appearsOn',
-  }
+  const linkCard =
+    'inline-flex h-10 items-center gap-1.5 rounded-xl bg-fill-2 px-4 text-body font-medium text-label hover:bg-fill'
 
   const playingArtist = $derived(player.currentSong?.albumArtistId === id && !player.paused)
 </script>
@@ -204,7 +185,11 @@
     <div class="flex justify-center py-12"><Spinner /></div>
   {/if}
   {#each shelves as shelf (shelf.kind)}
-    <Shelf class="pt-9" title={t(shelfTitle[shelf.kind])}>
+    <Shelf
+      class="pt-9"
+      title={t(SHELF_TITLE[shelf.kind])}
+      href={href(`/artist/${id}/discography/${shelf.kind}`)}
+    >
       {#each shelf.albums as album (album.id)}
         <div class="w-[190px]">
           <AlbumCard {album} subtitle={shelf.kind === 'appearsOn' ? 'artist' : 'year'} size={190} />
@@ -214,29 +199,25 @@
   {/each}
 
   {#if bio || lastFm || mbid}
-    <section class="-mx-4 mt-12 bg-shelf px-4 pt-7 pb-8 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
+    <section class="pt-9">
       <h2 class="mb-3 text-[17px] leading-[22px] font-bold text-label">
         {t('ui.aboutArtist', { name: a.name, _: `About ${a.name}` })}
       </h2>
-      <div class="flex flex-col gap-4 md:flex-row md:items-start">
-        {#if bio}
-          <button
-            type="button"
-            class="max-w-3xl flex-1 rounded-xl bg-fill-2 p-4 text-left hover:bg-fill"
-            onclick={() => (about = true)}
-          >
-            <ExpandableText text={bio} html lines={4} />
-          </button>
-        {/if}
-        <div class="flex flex-wrap gap-2">
+      {#if bio}
+        <button
+          type="button"
+          class="block max-w-3xl rounded-xl bg-fill-2 p-4 text-left hover:bg-fill"
+          onclick={() => (about = true)}
+        >
+          <ExpandableText text={bio} html lines={4} />
+        </button>
+      {/if}
+      <!-- External links as small cards matching the bio's -->
+      {#if (lastFm && isLastFmURL(lastFm)) || mbid}
+        <div class={cn('flex flex-wrap gap-2', bio && 'mt-3')}>
           {#if lastFm && isLastFmURL(lastFm)}
-            <a
-              href={lastFm}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex h-8 items-center gap-1.5 rounded-full bg-fill px-3.5 text-body font-medium text-label hover:bg-fill/80"
-            >
-              Last.fm <ExternalLink class="size-3.5" />
+            <a href={lastFm} target="_blank" rel="noopener noreferrer" class={linkCard}>
+              Last.fm <ExternalLink class="size-3.5 text-label-2" />
             </a>
           {/if}
           {#if mbid}
@@ -244,13 +225,13 @@
               href="https://musicbrainz.org/artist/{mbid}"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex h-8 items-center gap-1.5 rounded-full bg-fill px-3.5 text-body font-medium text-label hover:bg-fill/80"
+              class={linkCard}
             >
-              MusicBrainz <ExternalLink class="size-3.5" />
+              MusicBrainz <ExternalLink class="size-3.5 text-label-2" />
             </a>
           {/if}
         </div>
-      </div>
+      {/if}
     </section>
   {/if}
 

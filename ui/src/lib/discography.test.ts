@@ -8,7 +8,7 @@ const album = (over: Partial<Album>): Album =>
 describe('shelfOf', () => {
   it('uses MusicBrainz primary and secondary types', () => {
     expect(shelfOf(album({ tags: { releasetype: ['album'] } }), 'me')).toBe('albums')
-    expect(shelfOf(album({ tags: { releasetype: ['ep'] } }), 'me')).toBe('singles')
+    expect(shelfOf(album({ tags: { releasetype: ['ep'] } }), 'me')).toBe('eps')
     expect(shelfOf(album({ tags: { releasetype: ['single'] } }), 'me')).toBe('singles')
     expect(shelfOf(album({ tags: { releasetype: ['album', 'live'] } }), 'me')).toBe('live')
     expect(shelfOf(album({ tags: { releasetype: ['album;compilation'] } }), 'me')).toBe(
@@ -44,7 +44,7 @@ describe('discography', () => {
       ],
       'me',
     )
-    expect(groups.map((g) => g.kind)).toEqual(['albums', 'singles', 'appearsOn'])
+    expect(groups.map((g) => g.kind)).toEqual(['albums', 'eps', 'appearsOn'])
     expect(groups[0].albums.map((a) => a.id)).toEqual(['new', 'old'])
   })
 })
