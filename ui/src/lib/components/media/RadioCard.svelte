@@ -4,6 +4,7 @@
   import type { Radio } from '$lib/api/types'
   import { t } from '$lib/i18n/index.svelte'
   import { player } from '$lib/player/player.svelte'
+  import { externalUrl } from '$lib/utils/urls'
   import ActionMenu from '$lib/components/ui/menu/ActionMenu.svelte'
   import ContextMenuArea from '$lib/components/ui/menu/ContextMenuArea.svelte'
   import Artwork from './Artwork.svelte'
@@ -23,6 +24,8 @@
       return ''
     }
   })
+  // Only web links become clickable; anything else shows as plain text
+  const homePage = $derived(externalUrl(radio.homePageUrl))
   const current = $derived(player.current?.kind === 'radio' && player.current.radio.id === radio.id)
 </script>
 
@@ -71,9 +74,9 @@
       <div class="mt-1.5 min-w-0 pr-1">
         <div class="line-clamp-2 text-body text-label">{radio.name}</div>
         {#if host}
-          {#if radio.homePageUrl}
+          {#if homePage}
             <a
-              href={radio.homePageUrl}
+              href={homePage}
               target="_blank"
               rel="noopener noreferrer"
               class="block truncate text-body text-label-2 hover:underline">{host}</a

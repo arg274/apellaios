@@ -9,6 +9,7 @@
   import { auth } from '$lib/state/auth.svelte'
   import { settings } from '$lib/state/settings.svelte'
   import { formatDate } from '$lib/utils/formatters'
+  import { externalUrl } from '$lib/utils/urls'
   import PageHeader from '$lib/components/layout/PageHeader.svelte'
   import Artwork from '$lib/components/media/Artwork.svelte'
   import RadioCard from '$lib/components/media/RadioCard.svelte'
@@ -101,13 +102,17 @@
           <span class="truncate text-label">{r.name}</span>
         </div>
       {:else if col === 'homePageUrl'}
-        {#if r.homePageUrl}
+        {@const homePage = externalUrl(r.homePageUrl)}
+        {#if homePage}
           <a
-            href={r.homePageUrl}
+            href={homePage}
             target="_blank"
             rel="noopener noreferrer"
-            class="truncate text-label-2 hover:text-accent hover:underline">{r.homePageUrl}</a
+            class="truncate text-label-2 hover:text-accent hover:underline">{homePage}</a
           >
+        {:else if r.homePageUrl}
+          <!-- Not a web link: shown, never linked -->
+          <span class="truncate text-label-3">{r.homePageUrl}</span>
         {/if}
       {:else if col === 'actions'}
         <div class="flex items-center justify-end gap-1">

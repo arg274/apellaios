@@ -1,7 +1,7 @@
 <script lang="ts">
-  import DOMPurify from 'dompurify'
   import { t } from '$lib/i18n/index.svelte'
   import { cn } from '$lib/utils/cn'
+  import { sanitizeHtml } from '$lib/utils/sanitize'
 
   let {
     text,
@@ -20,7 +20,7 @@
   let el = $state<HTMLElement | null>(null)
   let overflowing = $state(false)
 
-  const safe = $derived(html ? DOMPurify.sanitize(text, { ADD_ATTR: ['target'] }) : '')
+  const safe = $derived(html ? sanitizeHtml(text) : '')
 
   $effect(() => {
     void text

@@ -12,6 +12,12 @@ describe('urlValidate', () => {
     expect(urlValidate('not-a-url')).toEqual('ra.validation.url')
     expect(urlValidate('example.com')).toEqual('ra.validation.url')
   })
+  it('rejects schemes that run code when used as a link', () => {
+    expect(urlValidate('javascript:alert(1)')).toEqual('ra.validation.url')
+    expect(urlValidate('JaVaScRiPt:alert(1)')).toEqual('ra.validation.url')
+    expect(urlValidate('data:text/html,<script>alert(1)</script>')).toEqual('ra.validation.url')
+    expect(urlValidate('vbscript:msgbox')).toEqual('ra.validation.url')
+  })
 })
 
 describe('isDateSet', () => {

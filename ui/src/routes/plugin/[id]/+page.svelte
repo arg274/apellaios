@@ -8,6 +8,7 @@
   import { parseIds, parseManifest } from '$lib/plugins'
   import SchemaForm from '$lib/schemaForm/SchemaForm.svelte'
   import { formatDateTime } from '$lib/utils/formatters'
+  import { externalUrl } from '$lib/utils/urls'
   import PluginToggle from '$lib/components/plugins/PluginToggle.svelte'
   import CheckList from '$lib/components/ui/CheckList.svelte'
   import Field from '$lib/components/ui/Field.svelte'
@@ -24,6 +25,8 @@
   const manifest = $derived(parseManifest(p))
   const perms = $derived(manifest?.permissions ?? {})
   const configSchema = $derived(manifest?.config?.schema)
+  // The manifest is third-party: only an http(s) website becomes a link
+  const website = $derived(externalUrl(manifest?.website))
 
   const users = new Loader(
     () => (perms.users ? 'users' : null),
@@ -238,19 +241,17 @@
             </div>
           {/if}
         {/each}
-        {#if manifest?.website}
+        {#if website}
           <div>
             <dt class="text-label-2">{t('resources.plugin.fields.website')}</dt>
             <dd>
               <a
-                href={manifest.website}
+                href={website}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="inline-flex max-w-full items-center gap-1 text-accent hover:underline"
               >
-                <span class="truncate">{manifest.website}</span><ExternalLink
-                  class="size-3 shrink-0"
-                />
+                <span class="truncate">{website}</span><ExternalLink class="size-3 shrink-0" />
               </a>
             </dd>
           </div>

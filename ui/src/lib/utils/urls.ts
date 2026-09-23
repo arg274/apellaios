@@ -39,6 +39,21 @@ export const isLastFmURL = (url: string | null | undefined): boolean => {
   }
 }
 
+/**
+ * The URL if it's a web link, otherwise undefined. Stored URLs (radio home pages, plugin
+ * manifests) may only become an href or be opened when they are http(s): a `javascript:` or
+ * `data:` URL would run in this origin, with the user's session.
+ */
+export const externalUrl = (url: string | null | undefined): string | undefined => {
+  if (!url) return undefined
+  try {
+    const { protocol } = new URL(url)
+    return protocol === 'http:' || protocol === 'https:' ? url : undefined
+  } catch {
+    return undefined
+  }
+}
+
 export const openInNewTab = (url: string): Window | null => {
   const win = window.open(url, '_blank', 'noopener')
   win?.focus()

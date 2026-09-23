@@ -1,8 +1,8 @@
 <script lang="ts">
   import { AudioLines } from '@lucide/svelte'
-  import DOMPurify from 'dompurify'
   import { BRAND } from '$lib/brand'
   import config from '$lib/config'
+  import { sanitizeHtml } from '$lib/utils/sanitize'
   import { t } from '$lib/i18n/index.svelte'
   import { auth } from '$lib/state/auth.svelte'
   import Button from '$lib/components/ui/Button.svelte'
@@ -18,7 +18,7 @@
   let busy = $state(false)
   let bgLoaded = $state(false)
 
-  const welcome = config.welcomeMessage ? DOMPurify.sanitize(config.welcomeMessage) : ''
+  const welcome = config.welcomeMessage ? sanitizeHtml(config.welcomeMessage) : ''
 
   async function submit(e: SubmitEvent) {
     e.preventDefault()

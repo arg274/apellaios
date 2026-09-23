@@ -30,6 +30,7 @@ import { player } from '$lib/player/player.svelte'
 import { toast } from '$lib/state/toast.svelte'
 import { ui } from '$lib/state/ui.svelte'
 import { formatBytes } from '$lib/utils/formatters'
+import { externalUrl } from '$lib/utils/urls'
 import { shuffled } from '$lib/utils/misc'
 
 // ---- Fetching songs --------------------------------------------------------------------------
@@ -301,10 +302,11 @@ export function radioMenu(radio: Radio) {
       icon: Play,
       onSelect: () => player.playRadio(radio),
     },
-    !!radio.homePageUrl && {
+    !!externalUrl(radio.homePageUrl) && {
       label: t('resources.radio.fields.homePageUrl'),
       icon: ExternalLink,
-      onSelect: () => void window.open(radio.homePageUrl, '_blank', 'noopener,noreferrer'),
+      onSelect: () =>
+        void window.open(externalUrl(radio.homePageUrl), '_blank', 'noopener,noreferrer'),
     },
     session.isAdmin && separator,
     session.isAdmin && {

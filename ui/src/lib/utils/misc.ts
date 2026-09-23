@@ -1,11 +1,15 @@
 import type { ReplayGainMode } from '$lib/state/settings.svelte'
 
-/** Returns undefined for a valid (or empty) URL, otherwise the i18n key of the error */
+const ALLOWED_URL_PROTOCOLS = new Set(['http:', 'https:', 'ftp:'])
+
+/**
+ * Returns undefined for a valid (or empty) URL, otherwise the i18n key of the error. Only network
+ * schemes pass: `javascript:`, `data:` and the like parse fine but must never be stored as links.
+ */
 export const urlValidate = (value: string | null | undefined): string | undefined => {
   if (!value) return undefined
   try {
-    new URL(value)
-    return undefined
+    return ALLOWED_URL_PROTOCOLS.has(new URL(value).protocol) ? undefined : 'ra.validation.url'
   } catch {
     return 'ra.validation.url'
   }
