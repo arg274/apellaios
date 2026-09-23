@@ -36,11 +36,10 @@
 <span class={cn('min-w-0', className)}>
   {#each segments as seg, i (i)}
     {#if 'artist' in seg}
-      <a
-        href={href(`/artist/${seg.artist.id}/show`)}
-        class={linkClass}
-        onclick={(e) => e.stopPropagation()}
-      >
+      <!-- No stopPropagation here: SvelteKit routes link clicks from a document listener, and a
+           link it never sees is followed natively, which its hash router answers with a full page
+           reload. Clickable rows ignore clicks that land on links instead. -->
+      <a href={href(`/artist/${seg.artist.id}/show`)} class={linkClass}>
         {seg.artist.name}{#if seg.artist.subRoles?.length}<span class="text-label-3">
             ({seg.artist.subRoles.join(', ')})</span
           >{/if}
