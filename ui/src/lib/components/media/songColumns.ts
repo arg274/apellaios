@@ -1,3 +1,4 @@
+import { MediaQuery } from 'svelte/reactivity'
 import config from '$lib/config'
 
 export type ColumnId =
@@ -54,6 +55,7 @@ export const COLUMNS: Record<ColumnId, ColumnDef> = {
     sort: 'duration',
     width: '4.5rem',
     align: 'right',
+    minWidth: 'sm',
   },
   playCount: {
     label: 'resources.song.fields.playCount',
@@ -108,11 +110,13 @@ export const COLUMNS: Record<ColumnId, ColumnDef> = {
   },
   comment: { label: 'resources.song.fields.comment', width: '14rem', minWidth: 'xl' },
   path: { label: 'resources.song.fields.path', width: '18rem', minWidth: 'xl' },
+  // Hidden on phones, like Apple's track lists there: the title gets the row, and both are in "…"
   love: {
     label: 'resources.song.fields.starred',
     sort: 'starred_at',
     width: '2.5rem',
     align: 'center',
+    minWidth: 'sm',
   },
 }
 
@@ -120,9 +124,25 @@ export const COLUMNS: Record<ColumnId, ColumnDef> = {
 export const columnEnabled = (id: ColumnId) =>
   (id !== 'rating' || config.enableStarRating) && (id !== 'love' || config.enableFavourites)
 
-export const breakpointClass = {
-  sm: 'max-sm:hidden',
-  md: 'max-md:hidden',
-  lg: 'max-lg:hidden',
-  xl: 'max-xl:hidden',
+type Breakpoint = NonNullable<ColumnDef['minWidth']>
+
+// Tailwind's breakpoints, created on first use (not at import, where tests have no matchMedia)
+const MIN_WIDTH: Record<Breakpoint, string> = {
+  sm: '40rem',
+  md: '48rem',
+  lg: '64rem',
+  xl: '80rem',
+}
+const queries: Partial<Record<Breakpoint, MediaQuery>> = {}
+
+/**
+ * Whether the screen is wide enough for a column. Narrow screens leave such columns out of the
+ * table altogether: hiding a column with display:none leaves its width unassigned in a fixed
+ * table, so the title shrank instead of taking the space.
+ */
+export const columnFits = (id: ColumnId): boolean => {
+  const bp = COLUMNS[id].minWidth
+  if (!bp) return true
+  queries[bp] ??= new MediaQuery(`min-width: ${MIN_WIDTH[bp]}`)
+  return queries[bp].current
 }

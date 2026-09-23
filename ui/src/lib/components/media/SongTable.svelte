@@ -27,7 +27,7 @@
   import PlayingBars from './PlayingBars.svelte'
   import QualityBadge from './QualityBadge.svelte'
   import Rating from './Rating.svelte'
-  import { breakpointClass, COLUMNS, columnEnabled, type ColumnId } from './songColumns'
+  import { COLUMNS, columnEnabled, columnFits, type ColumnId } from './songColumns'
 
   let {
     songs,
@@ -85,7 +85,8 @@
   const visible = $derived(
     columns.filter(
       (c) =>
-        columnEnabled(c) && (c === 'title' || settings.column(listKey, c, !defaultOff.includes(c))),
+        columnEnabled(c) &&
+        (c === 'title' || (columnFits(c) && settings.column(listKey, c, !defaultOff.includes(c)))),
     ),
   )
   const selectedSet = $derived(new Set(selected))
@@ -198,8 +199,6 @@
       : COLUMNS[c].align === 'center'
         ? 'text-center'
         : 'text-left'
-  const hideClass = (c: ColumnId) =>
-    COLUMNS[c].minWidth ? breakpointClass[COLUMNS[c].minWidth!] : ''
 </script>
 
 {#snippet numberCell(song: S, index: number)}
@@ -369,7 +368,6 @@
           // The title starts right at the 40px number column, as in Apple's tracklist
           c === 'title' && variant === 'album' && 'pl-0',
           alignClass(c),
-          hideClass(c),
           c === 'title' && 'text-label',
         )}
       >
@@ -403,10 +401,7 @@
       <colgroup>
         {#if variant === 'list'}<col class="w-10" />{/if}
         {#each visible as c (c)}
-          <col
-            class={hideClass(c)}
-            style:width={COLUMNS[c].width === 'auto' ? undefined : COLUMNS[c].width}
-          />
+          <col style:width={COLUMNS[c].width === 'auto' ? undefined : COLUMNS[c].width} />
         {/each}
         <col class="w-[53px]" />
       </colgroup>
@@ -417,7 +412,7 @@
             {#each visible as c (c)}
               {@const field = sortableField(c)}
               <th
-                class={cn('px-2 font-semibold first:pl-3', alignClass(c), hideClass(c))}
+                class={cn('px-2 font-semibold first:pl-3', alignClass(c))}
                 aria-sort={sort === field
                   ? order === 'ASC'
                     ? 'ascending'
