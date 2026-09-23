@@ -24,27 +24,20 @@ export const fillRows = (count: number, columns: number): number =>
 export class GridPages {
   /** Width of the list area in px */
   width = $state(0)
-  #grid: () => boolean
-  #perPage: () => number
-  #columns: (width: number) => number
+  // Derived, so lists refetch only when the page size changes, not on every pixel of a resize
+  readonly ready: boolean
+  readonly pageSize: number
 
   constructor(opts: {
     grid: () => boolean
     perPage: () => number
     columns: (width: number) => number
   }) {
-    this.#grid = opts.grid
-    this.#perPage = opts.perPage
-    this.#columns = opts.columns
-  }
-
-  get ready(): boolean {
-    return !this.#grid() || this.width > 0
-  }
-
-  get pageSize(): number {
-    const perPage = this.#perPage()
-    if (!this.#grid() || !this.width) return perPage
-    return fillRows(perPage, this.#columns(this.width))
+    this.ready = $derived(!opts.grid() || this.width > 0)
+    this.pageSize = $derived(
+      opts.grid() && this.width
+        ? fillRows(opts.perPage(), opts.columns(this.width))
+        : opts.perPage(),
+    )
   }
 }
