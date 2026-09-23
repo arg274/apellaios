@@ -22,7 +22,7 @@ DOCKER_TAG ?= deluan/navidrome:develop
 
 GOLANGCI_LINT_VERSION ?= v2.13.2
 
-UI_SRC_FILES := $(shell find ui -type f -not -path "ui/build/*" -not -path "ui/node_modules/*")
+UI_SRC_FILES := $(shell find ui -type f -not -path "ui/build/*" -not -path "ui/node_modules/*" -not -path "ui/.svelte-kit/*")
 
 setup: check_env download-deps install-golangci-lint setup-git ##@1_Run_First Install dependencies and prepare development environment
 	@echo Downloading Node dependencies...
@@ -99,6 +99,7 @@ lint: install-golangci-lint ##@Development Lint Go code
 lintall: lint ##@Development Lint Go and JS code
 	@(cd ./ui && npm run check-formatting) || (echo "\n\nPlease run 'npm run prettier' to fix formatting issues." && exit 1)
 	@(cd ./ui && npm run lint)
+	@(cd ./ui && npm run check)
 .PHONY: lintall
 
 format: ##@Development Format code

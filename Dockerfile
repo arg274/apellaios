@@ -31,12 +31,11 @@ WORKDIR /app
 
 # Install node dependencies
 COPY ui/package.json ui/package-lock.json ./
-COPY ui/bin/ ./bin/
 RUN npm ci
 
-# Build bundle
+# Build bundle. SvelteKit's static adapter always writes to ./build, so move it into place
 COPY ui/ ./
-RUN npm run build -- --outDir=/build
+RUN npm run build && mv build /build
 
 FROM scratch AS ui-bundle
 COPY --from=ui /build /build

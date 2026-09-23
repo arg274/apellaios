@@ -323,6 +323,11 @@ jobs:
           cd ui
           npm run check-formatting && npm run lint
 
+      - name: npm type-check
+        run: |
+          cd ui
+          npm run check
+
       - name: npm test
         run: |
           cd ui

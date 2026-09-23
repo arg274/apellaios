@@ -3,7 +3,7 @@
 # validate-translations.sh
 # 
 # This script validates the structure of JSON translation files by comparing them 
-# against the reference English translation file (ui/src/i18n/en.json).
+# against the reference English translation file (ui/src/lib/i18n/en.json).
 #
 # The script performs the following validations:
 # 1. JSON syntax validation using jq
@@ -16,7 +16,7 @@
 #   ./validate-translations.sh
 #
 # Environment Variables:
-#   EN_FILE          - Path to reference English file (default: ui/src/i18n/en.json)
+#   EN_FILE          - Path to reference English file (default: ui/src/lib/i18n/en.json)
 #   TRANSLATION_DIR  - Directory containing translation files (default: resources/i18n)
 #
 # Exit codes:
@@ -31,7 +31,7 @@
 set -e
 
 # Path to the reference English translation file
-EN_FILE="${EN_FILE:-ui/src/i18n/en.json}"
+EN_FILE="${EN_FILE:-ui/src/lib/i18n/en.json}"
 TRANSLATION_DIR="${TRANSLATION_DIR:-resources/i18n}"
 VERBOSE=false
 
@@ -52,7 +52,7 @@ while [[ $# -gt 0 ]]; do
     echo "  -v, --verbose  Show detailed output (default: only show errors)"
     echo ""
     echo "Environment Variables:"
-    echo "  EN_FILE          Path to reference English file (default: ui/src/i18n/en.json)"
+    echo "  EN_FILE          Path to reference English file (default: ui/src/lib/i18n/en.json)"
     echo "  TRANSLATION_DIR  Directory with translation files (default: resources/i18n)"
     echo ""
     echo "Examples:"
