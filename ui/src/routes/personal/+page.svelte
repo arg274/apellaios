@@ -183,6 +183,13 @@
         {/each}
       </div>
     </div>
+    <Field label={t('ui.coverAccent')} for="cover-accent" inline hint={t('ui.coverAccentHint')}>
+      <Switch
+        id="cover-accent"
+        checked={settings.coverAccent}
+        onCheckedChange={(v) => (settings.coverAccent = v)}
+      />
+    </Field>
   </FormSection>
 
   <FormSection>

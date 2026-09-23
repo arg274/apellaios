@@ -841,6 +841,8 @@
     "schemeLight": "Light",
     "schemeDark": "Dark",
     "accent": "Accent Colour",
+    "coverAccent": "Match Accent to Artwork",
+    "coverAccentHint": "Album, artist and playlist pages take their accent from the cover.",
     "playback": "Playback",
     "scrobbling": "Scrobbling",
     "accents": {

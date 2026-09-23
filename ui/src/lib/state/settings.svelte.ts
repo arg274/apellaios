@@ -8,6 +8,8 @@ interface Settings {
   /** Read by app.html before the first paint, so keep the name stable */
   colorScheme: Scheme
   accent: string
+  /** On artwork-tinted pages, derive the accent from the cover instead of using `accent` */
+  coverAccent: boolean
   albumView: AlbumView
   notifications: boolean
   /** Per list, which optional columns are shown: { song: { bpm: true } } */
@@ -71,6 +73,7 @@ class SettingsState {
     {
       colorScheme: 'auto',
       accent: DEFAULT_ACCENT,
+      coverAccent: true,
       albumView: 'grid',
       notifications: false,
       columns: {},
@@ -115,6 +118,13 @@ class SettingsState {
 
   get accentPreset(): Accent {
     return findAccent(this.#s.accent)
+  }
+
+  get coverAccent() {
+    return this.#s.coverAccent
+  }
+  set coverAccent(v: boolean) {
+    this.#s.coverAccent = v
   }
 
   /** The scheme actually in effect, with "auto" resolved against the OS */

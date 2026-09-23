@@ -26,3 +26,19 @@ export const pageTint = (hex: string | null | undefined, dark: boolean): string 
   if (!isHex(hex)) return null
   return dark ? `oklch(from ${hex} min(l, 0.3) c h)` : hex
 }
+
+/**
+ * An accent taken from the artwork, for pages it tints: the tint's own hue with its lightness
+ * pushed away from the page, so controls stand out without clashing. On a light page it is a deep
+ * version (half the tint's lightness, about the secondary text's) under white text; on a dark one
+ * a light version under black text. Grey covers give a grey accent.
+ */
+export const tintAccent = (
+  hex: string | null | undefined,
+  dark: boolean,
+): { accent: string; onAccent: string } | null => {
+  if (!isHex(hex)) return null
+  return dark
+    ? { accent: `oklch(from ${hex} clamp(0.72, l, 0.84) min(c * 1.4, 0.2) h)`, onAccent: '#000000' }
+    : { accent: `oklch(from ${hex} calc(l * 0.45) min(c * 1.5, 0.2) h)`, onAccent: '#ffffff' }
+}
