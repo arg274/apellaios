@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { autoFillColumns, fillRows } from './grid'
+import { autoFillColumns, fillRows } from './grid.svelte'
 
 describe('autoFillColumns', () => {
   it('fits as many minimum-width tracks and gaps as the width allows', () => {

@@ -1,12 +1,8 @@
 <script lang="ts" module>
-  import { autoFillColumns } from '$lib/utils/grid'
+  import { responsiveColumns } from '$lib/utils/grid.svelte'
 
-  /**
-   * The columns this grid shows at `width` px, for lists that page by whole rows. Mirrors the
-   * classes below: 150px tracks, 170px from the sm breakpoint, 20px gutters.
-   */
-  export const albumGridColumns = (width: number) =>
-    autoFillColumns(width, matchMedia('(min-width: 40rem)').matches ? 170 : 150, 20)
+  /** The columns this grid shows at `width` px; mirrors the grid classes below */
+  export const albumGridColumns = (width: number) => responsiveColumns(width, 150, 170)
 </script>
 
 <script lang="ts">

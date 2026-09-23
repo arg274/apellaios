@@ -22,7 +22,7 @@
   import { auth } from '$lib/state/auth.svelte'
   import { settings } from '$lib/state/settings.svelte'
   import { formatBytes, formatDuration2 } from '$lib/utils/formatters'
-  import { fillRows } from '$lib/utils/grid'
+  import { GridPages } from '$lib/utils/grid.svelte'
   import PageHeader from '$lib/components/layout/PageHeader.svelte'
   import AlbumGrid, { albumGridColumns } from '$lib/components/media/AlbumGrid.svelte'
   import ArtistLinks from '$lib/components/media/ArtistLinks.svelte'
@@ -55,20 +55,19 @@
     }),
   )
 
-  // The grid pages by whole rows: the chosen page size rounded up to fill the last row at the
-  // current width. Until the list area is measured there is nothing to size, so hold the fetch.
-  let listWidth = $state(0)
   const grid = $derived(settings.albumView === 'grid')
-  const pageSize = $derived(
-    grid ? fillRows(params.perPage, listWidth ? albumGridColumns(listWidth) : 0) : params.perPage,
-  )
+  const pages = new GridPages({
+    grid: () => grid,
+    perPage: () => params.perPage,
+    columns: albumGridColumns,
+  })
 
   const albums = new ListController('album', () =>
-    grid && !listWidth
+    !pages.ready
       ? null
       : {
           ...params.params,
-          perPage: pageSize,
+          perPage: pages.pageSize,
           // A preset's own filter always applies, on top of whatever the user adds
           filter: { ...params.filter, ...preset.filter },
         },
@@ -234,8 +233,8 @@
   </Button>
 </div>
 
-<div bind:clientWidth={listWidth}>
-  {#if (albums.loading || (grid && !listWidth)) && !albums.data.length}
+<div bind:clientWidth={pages.width}>
+  {#if (albums.loading || !pages.ready) && !albums.data.length}
     <div class="flex justify-center py-24"><Spinner class="size-7" /></div>
   {:else if albums.error}
     <EmptyState icon={Disc3} title={t('ra.page.error')} message={albums.error.message} />
@@ -301,7 +300,7 @@
       total={albums.total}
       bind:page={() => params.page, (v) => (params.page = v)}
       bind:perPage={() => params.perPage, (v) => (params.perPage = v)}
-      {pageSize}
+      pageSize={pages.pageSize}
       perPageOptions={[30, 60, 90, 120]}
     />
   {/if}

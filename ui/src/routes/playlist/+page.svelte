@@ -12,6 +12,7 @@
   import { settings } from '$lib/state/settings.svelte'
   import { toast } from '$lib/state/toast.svelte'
   import { formatDate, formatDuration2 } from '$lib/utils/formatters'
+  import { GridPages, responsiveColumns } from '$lib/utils/grid.svelte'
   import PageHeader from '$lib/components/layout/PageHeader.svelte'
   import Artwork from '$lib/components/media/Artwork.svelte'
   import LoveButton from '$lib/components/media/LoveButton.svelte'
@@ -30,8 +31,16 @@
   import Switch from '$lib/components/ui/Switch.svelte'
 
   const params = new UrlListParams('playlist', { sort: 'name', order: 'ASC', perPage: 60 })
-  const playlists = new ListController('playlist', () => params.params)
   const view = $derived(settings.view('playlist'))
+  // The grid pages by whole rows at the current width; columns mirror the grid classes below
+  const pages = new GridPages({
+    grid: () => view === 'grid',
+    perPage: () => params.perPage,
+    columns: (width) => responsiveColumns(width, 150, 170),
+  })
+  const playlists = new ListController('playlist', () =>
+    pages.ready ? { ...params.params, perPage: pages.pageSize } : null,
+  )
 
   // Admins can narrow the list to one owner, like the legacy filter
   const users = new Loader(
@@ -131,78 +140,85 @@
   {/snippet}
 </PageHeader>
 
-{#if playlists.loading && !playlists.data.length}
-  <div class="flex justify-center py-24"><Spinner class="size-7" /></div>
-{:else if playlists.error}
-  <EmptyState icon={ListMusic} title={t('ra.page.error')} message={playlists.error.message} />
-{:else if !playlists.data.length}
-  <EmptyState icon={ListMusic} title={t('ra.navigation.no_results')}>
-    <Button href={href('/playlist/create')} class="mt-3"><Plus />{t('ra.action.create')}</Button>
-  </EmptyState>
-{:else if view === 'grid'}
-  <div
-    class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-x-5 gap-y-6 sm:grid-cols-[repeat(auto-fill,minmax(170px,1fr))] {playlists.loading
-      ? 'opacity-60'
-      : ''}"
-  >
-    {#each playlists.data as playlist, i (playlist.id)}
-      <PlaylistCard {playlist} eager={i < 12} />
-    {/each}
-  </div>
-{:else}
-  <DataTable
-    rows={playlists.data}
-    {columns}
-    loading={playlists.loading}
-    sort={params.sort}
-    order={params.order}
-    onsort={(f) => params.setSort(f)}
-    rowHref={(p) => href(`/playlist/${p.id}/show`)}
-  >
-    {#snippet cell(p, col)}
-      {#if col === 'name'}
-        <div class="flex min-w-0 items-center gap-3">
-          <div class="size-10 shrink-0"><Artwork kind="playlist" record={p} size={40} /></div>
-          <span class="flex min-w-0 items-center gap-1 truncate text-label">
-            {#if isSmartPlaylist(p)}<Sparkles class="size-3.5 shrink-0 text-accent" />{/if}{p.name}
-          </span>
-        </div>
-      {:else if col === 'public'}
-        <Switch
-          label={t('resources.playlist.fields.public')}
-          checked={publicBy[p.id] ?? p.public}
-          disabled={!isWritable(p.ownerId)}
-          onCheckedChange={(v) => setFlag(p, 'public', v)}
-        />
-      {:else if col === 'sync'}
-        {#if p.path}
+<div bind:clientWidth={pages.width}>
+  {#if (playlists.loading || !pages.ready) && !playlists.data.length}
+    <div class="flex justify-center py-24"><Spinner class="size-7" /></div>
+  {:else if playlists.error}
+    <EmptyState icon={ListMusic} title={t('ra.page.error')} message={playlists.error.message} />
+  {:else if !playlists.data.length}
+    <EmptyState icon={ListMusic} title={t('ra.navigation.no_results')}>
+      <Button href={href('/playlist/create')} class="mt-3"><Plus />{t('ra.action.create')}</Button>
+    </EmptyState>
+  {:else if view === 'grid'}
+    <div
+      class="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-x-5 gap-y-6 sm:grid-cols-[repeat(auto-fill,minmax(170px,1fr))] {playlists.loading
+        ? 'opacity-60'
+        : ''}"
+    >
+      {#each playlists.data as playlist, i (playlist.id)}
+        <PlaylistCard {playlist} eager={i < 12} />
+      {/each}
+    </div>
+  {:else}
+    <DataTable
+      rows={playlists.data}
+      {columns}
+      loading={playlists.loading}
+      sort={params.sort}
+      order={params.order}
+      onsort={(f) => params.setSort(f)}
+      rowHref={(p) => href(`/playlist/${p.id}/show`)}
+    >
+      {#snippet cell(p, col)}
+        {#if col === 'name'}
+          <div class="flex min-w-0 items-center gap-3">
+            <div class="size-10 shrink-0"><Artwork kind="playlist" record={p} size={40} /></div>
+            <span class="flex min-w-0 items-center gap-1 truncate text-label">
+              {#if isSmartPlaylist(p)}<Sparkles
+                  class="size-3.5 shrink-0 text-accent"
+                />{/if}{p.name}
+            </span>
+          </div>
+        {:else if col === 'public'}
           <Switch
-            label={t('resources.playlist.fields.sync')}
-            checked={syncBy[p.id] ?? p.sync}
+            label={t('resources.playlist.fields.public')}
+            checked={publicBy[p.id] ?? p.public}
             disabled={!isWritable(p.ownerId)}
-            onCheckedChange={(v) => setFlag(p, 'sync', v)}
+            onCheckedChange={(v) => setFlag(p, 'public', v)}
           />
+        {:else if col === 'sync'}
+          {#if p.path}
+            <Switch
+              label={t('resources.playlist.fields.sync')}
+              checked={syncBy[p.id] ?? p.sync}
+              disabled={!isWritable(p.ownerId)}
+              onCheckedChange={(v) => setFlag(p, 'sync', v)}
+            />
+          {/if}
+        {:else if col === 'actions'}
+          <div class="flex items-center justify-end gap-1">
+            <LoveButton
+              id={p.id}
+              size="sm"
+              bind:starred={
+                () => starredBy[p.id] ?? p.starred ?? false, (v) => (starredBy[p.id] = v)
+              }
+            />
+            <ActionMenu items={() => playlistMenu(p)} />
+          </div>
         {/if}
-      {:else if col === 'actions'}
-        <div class="flex items-center justify-end gap-1">
-          <LoveButton
-            id={p.id}
-            size="sm"
-            bind:starred={() => starredBy[p.id] ?? p.starred ?? false, (v) => (starredBy[p.id] = v)}
-          />
-          <ActionMenu items={() => playlistMenu(p)} />
-        </div>
-      {/if}
-    {/snippet}
-  </DataTable>
-{/if}
+      {/snippet}
+    </DataTable>
+  {/if}
 
-{#if playlists.data.length}
-  <Pagination
-    class="mt-10"
-    total={playlists.total}
-    bind:page={() => params.page, (v) => (params.page = v)}
-    bind:perPage={() => params.perPage, (v) => (params.perPage = v)}
-    perPageOptions={[30, 60, 120]}
-  />
-{/if}
+  {#if playlists.data.length}
+    <Pagination
+      class="mt-10"
+      total={playlists.total}
+      bind:page={() => params.page, (v) => (params.page = v)}
+      bind:perPage={() => params.perPage, (v) => (params.perPage = v)}
+      pageSize={pages.pageSize}
+      perPageOptions={[30, 60, 120]}
+    />
+  {/if}
+</div>
