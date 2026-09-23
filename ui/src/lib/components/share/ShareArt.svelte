@@ -1,7 +1,7 @@
 <script lang="ts">
   // Cover art for a shared track. Share pages can't use Artwork: covers come from the share's
   // signed image endpoint, not getCoverArt.
-  import { Music } from '@lucide/svelte'
+  import { Disc3 } from '@lucide/svelte'
   import { shareCoverUrl } from '$lib/utils/urls'
   import { cn } from '$lib/utils/cn'
 
@@ -18,12 +18,12 @@
 </script>
 
 <div
-  class="relative aspect-square w-full bg-gradient-to-b from-fill to-fill-2"
+  class="relative aspect-square w-full bg-linear-to-b from-cover-top to-cover-bottom"
   style:max-width="{size}px"
 >
   {#if !src || failedSrc === src}
-    <div class="absolute inset-0 flex items-center justify-center text-label-3">
-      <Music class="size-1/3" strokeWidth={1.25} />
+    <div class="absolute inset-0 flex items-center justify-center text-cover-glyph">
+      <Disc3 class="size-1/3" strokeWidth={1.25} />
     </div>
   {:else}
     <img

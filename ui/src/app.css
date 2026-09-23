@@ -146,6 +146,14 @@
   --color-scrim: var(--scrim);
   --color-shelf: var(--shelf);
   --color-row-divider: var(--row-divider);
+  /*
+   * The blank cover for missing artwork. Deliberately the same in both schemes, and identical to
+   * the server's resources/album-placeholder.webp, so art the UI knows is missing looks exactly
+   * like the placeholder image the server sends when it doesn't.
+   */
+  --color-cover-top: #353535;
+  --color-cover-bottom: #2a2a2a;
+  --color-cover-glyph: #838383;
 
   /* Apple's type ramp (sizes/line heights), used as text-title-1 etc. */
   --text-large-title: 26px;

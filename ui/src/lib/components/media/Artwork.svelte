@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Disc3, ListMusic, Mic2, Music, Radio } from '@lucide/svelte'
+  import { Disc3, ListMusic, Mic2, Radio } from '@lucide/svelte'
   import { coverArtUrl, discCoverArtUrl, type ArtKind, type ArtRef } from '$lib/api/subsonic'
   import { cn } from '$lib/utils/cn'
   import { sizeBucket, thumbhashDataUrl } from './thumbhashUrl'
@@ -37,9 +37,10 @@
       : coverArtUrl(kind, record, px, square)
   })
   const placeholder = $derived(thumbhashDataUrl(record?.thumbHash))
+  // Songs share the album glyph: the server's placeholder for a song's art is the album one
   const fallbackIcons = {
     album: Disc3,
-    song: Music,
+    song: Disc3,
     playlist: ListMusic,
     radio: Radio,
     artist: Mic2,
@@ -86,7 +87,7 @@
   {/if}
   {#if (!src || failed) && !placeholder}
     <div
-      class="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-fill to-fill-2 text-label-3"
+      class="absolute inset-0 flex items-center justify-center bg-linear-to-b from-cover-top to-cover-bottom text-cover-glyph"
     >
       <FallbackIcon class="size-1/3" strokeWidth={1.25} />
     </div>
