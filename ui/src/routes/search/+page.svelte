@@ -2,7 +2,7 @@
   import { Search, X } from '@lucide/svelte'
   import config from '$lib/config'
   import { getAll, getList } from '$lib/api/rest'
-  import type { Album, Artist, Genre, Song } from '$lib/api/types'
+  import type { Album, Artist, Song } from '$lib/api/types'
   import { Loader } from '$lib/data.svelte'
   import { t } from '$lib/i18n/index.svelte'
   import { hashQuery, href, setHashQuery } from '$lib/nav.svelte'
@@ -10,6 +10,7 @@
   import PageTitle from '$lib/components/layout/PageTitle.svelte'
   import AlbumCard from '$lib/components/media/AlbumCard.svelte'
   import ArtistCard from '$lib/components/media/ArtistCard.svelte'
+  import GenreTile from '$lib/components/media/GenreTile.svelte'
   import Shelf from '$lib/components/media/Shelf.svelte'
   import SongGrid from '$lib/components/media/SongGrid.svelte'
   import EmptyState from '$lib/components/ui/EmptyState.svelte'
@@ -114,16 +115,7 @@
   {:else}
     <div class="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4">
       {#each genres.value ?? [] as genre (genre.id)}
-        {@const hue = tileHue(genre.name)}
-        <a
-          href={href('/album/all', {
-            filter: JSON.stringify({ genre_id: (genre as Genre & { id: string }).id }),
-          })}
-          class="relative flex aspect-[16/10] items-end overflow-hidden rounded-xl bg-linear-135 from-[oklch(0.55_0.15_var(--hue))] to-[oklch(0.38_0.12_calc(var(--hue)+40))] p-3 text-title-3 font-bold text-white shadow-sm transition-transform hover:scale-[1.02]"
-          style:--hue={hue}
-        >
-          {genre.name}
-        </a>
+        <GenreTile id={genre.id!} name={genre.name} hue={tileHue(genre.name)} />
       {/each}
     </div>
   {/if}

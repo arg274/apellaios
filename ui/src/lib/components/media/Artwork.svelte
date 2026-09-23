@@ -14,6 +14,7 @@
     eager = false,
     round = false,
     class: className,
+    onloaded,
   }: {
     kind: ArtKind
     record: ArtRef | null | undefined
@@ -27,11 +28,16 @@
     /** Circular crop (artists) */
     round?: boolean
     class?: string
+    /**
+     * Called once the image loads. `placeholder` is true when the server sent its placeholder
+     * instead of real art: that image is never resized, so it comes back larger than requested.
+     */
+    onloaded?: (result: { placeholder: boolean }) => void
   } = $props()
 
+  const px = $derived(sizeBucket(size))
   const src = $derived.by(() => {
     if (!record || record.imageAbsent) return undefined
-    const px = sizeBucket(size)
     return disc !== undefined
       ? discCoverArtUrl(record.id, disc, record.updatedAt, px)
       : coverArtUrl(kind, record, px, square)
@@ -81,7 +87,10 @@
         'absolute inset-0 size-full object-cover transition-opacity duration-300',
         loaded ? 'opacity-100' : 'opacity-0',
       )}
-      onload={() => (loadedSrc = src)}
+      onload={(e) => {
+        loadedSrc = src
+        onloaded?.({ placeholder: (e.currentTarget as HTMLImageElement).naturalWidth > px })
+      }}
       onerror={() => (failedSrc = src)}
     />
   {/if}
