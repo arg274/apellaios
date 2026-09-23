@@ -8,19 +8,23 @@
   let {
     page = $bindable(1),
     perPage = $bindable(25),
+    pageSize,
     total,
     perPageOptions = [25, 50, 100],
     class: className,
   }: {
     page?: number
     perPage?: number
+    /** Rows actually on a page when it differs from the chosen `perPage` (grids fill whole rows) */
+    pageSize?: number
     total: number
     perPageOptions?: number[]
     class?: string
   } = $props()
 
-  const from = $derived(total === 0 ? 0 : (page - 1) * perPage + 1)
-  const to = $derived(Math.min(page * perPage, total))
+  const size = $derived(pageSize ?? perPage)
+  const from = $derived(total === 0 ? 0 : (page - 1) * size + 1)
+  const to = $derived(Math.min(page * size, total))
 </script>
 
 <div
@@ -44,8 +48,8 @@
       {t('ra.navigation.page_range_info', { offsetBegin: from, offsetEnd: to, total })}
     </span>
   </div>
-  {#if total > perPage}
-    <Pagination.Root count={total} {perPage} bind:page siblingCount={1}>
+  {#if total > size}
+    <Pagination.Root count={total} perPage={size} bind:page siblingCount={1}>
       {#snippet children({ pages, currentPage })}
         <div class="flex items-center gap-1">
           <Pagination.PrevButton

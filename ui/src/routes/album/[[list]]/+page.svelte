@@ -22,8 +22,9 @@
   import { auth } from '$lib/state/auth.svelte'
   import { settings } from '$lib/state/settings.svelte'
   import { formatBytes, formatDuration2 } from '$lib/utils/formatters'
+  import { fillRows } from '$lib/utils/grid'
   import PageHeader from '$lib/components/layout/PageHeader.svelte'
-  import AlbumGrid from '$lib/components/media/AlbumGrid.svelte'
+  import AlbumGrid, { albumGridColumns } from '$lib/components/media/AlbumGrid.svelte'
   import ArtistLinks from '$lib/components/media/ArtistLinks.svelte'
   import Artwork from '$lib/components/media/Artwork.svelte'
   import ListFilters, { type FilterField } from '$lib/components/media/ListFilters.svelte'
@@ -54,11 +55,24 @@
     }),
   )
 
-  const albums = new ListController('album', () => ({
-    ...params.params,
-    // A preset's own filter always applies, on top of whatever the user adds
-    filter: { ...params.filter, ...preset.filter },
-  }))
+  // The grid pages by whole rows: the chosen page size rounded up to fill the last row at the
+  // current width. Until the list area is measured there is nothing to size, so hold the fetch.
+  let listWidth = $state(0)
+  const grid = $derived(settings.albumView === 'grid')
+  const pageSize = $derived(
+    grid ? fillRows(params.perPage, listWidth ? albumGridColumns(listWidth) : 0) : params.perPage,
+  )
+
+  const albums = new ListController('album', () =>
+    grid && !listWidth
+      ? null
+      : {
+          ...params.params,
+          perPage: pageSize,
+          // A preset's own filter always applies, on top of whatever the user adds
+          filter: { ...params.filter, ...preset.filter },
+        },
+  )
 
   const sortOptions = $derived(
     [
@@ -220,70 +234,75 @@
   </Button>
 </div>
 
-{#if albums.loading && !albums.data.length}
-  <div class="flex justify-center py-24"><Spinner class="size-7" /></div>
-{:else if albums.error}
-  <EmptyState icon={Disc3} title={t('ra.page.error')} message={albums.error.message} />
-{:else if !albums.data.length}
-  <EmptyState icon={Disc3} title={t('ra.navigation.no_results')} />
-{:else if settings.albumView === 'grid'}
-  <AlbumGrid albums={albums.data} loading={albums.loading} />
-{:else}
-  <DataTable
-    rows={albums.data}
-    {columns}
-    loading={albums.loading}
-    sort={params.sort}
-    order={params.order}
-    onsort={(f) => params.setSort(f)}
-    rowHref={(a) => href(`/album/${a.id}/show`)}
-  >
-    {#snippet cell(a, col)}
-      {#if col === 'name'}
-        <div class="flex min-w-0 items-center gap-3 {a.missing ? 'opacity-50' : ''}">
-          <div class="size-10 shrink-0"><Artwork kind="album" record={a} size={40} /></div>
-          <div class="min-w-0">
-            <div class="truncate text-label">{a.name}</div>
-            {#if a.tags?.releasetype}
-              <div class="truncate text-callout text-label-3">
-                {releaseTypeLabel(a.tags.releasetype.join(';'))}
-              </div>
-            {/if}
+<div bind:clientWidth={listWidth}>
+  {#if (albums.loading || (grid && !listWidth)) && !albums.data.length}
+    <div class="flex justify-center py-24"><Spinner class="size-7" /></div>
+  {:else if albums.error}
+    <EmptyState icon={Disc3} title={t('ra.page.error')} message={albums.error.message} />
+  {:else if !albums.data.length}
+    <EmptyState icon={Disc3} title={t('ra.navigation.no_results')} />
+  {:else if grid}
+    <AlbumGrid albums={albums.data} loading={albums.loading} />
+  {:else}
+    <DataTable
+      rows={albums.data}
+      {columns}
+      loading={albums.loading}
+      sort={params.sort}
+      order={params.order}
+      onsort={(f) => params.setSort(f)}
+      rowHref={(a) => href(`/album/${a.id}/show`)}
+    >
+      {#snippet cell(a, col)}
+        {#if col === 'name'}
+          <div class="flex min-w-0 items-center gap-3 {a.missing ? 'opacity-50' : ''}">
+            <div class="size-10 shrink-0"><Artwork kind="album" record={a} size={40} /></div>
+            <div class="min-w-0">
+              <div class="truncate text-label">{a.name}</div>
+              {#if a.tags?.releasetype}
+                <div class="truncate text-callout text-label-3">
+                  {releaseTypeLabel(a.tags.releasetype.join(';'))}
+                </div>
+              {/if}
+            </div>
           </div>
-        </div>
-      {:else if col === 'artist'}
-        <ArtistLinks record={a} role="albumartist" class="block truncate" />
-      {:else if col === 'rating'}
-        <Rating
-          id={a.id}
-          bind:rating={() => ratingBy[a.id] ?? a.rating ?? 0, (v) => (ratingBy[a.id] = v)}
-        />
-      {:else if col === 'actions'}
-        <div class="flex items-center justify-end gap-1">
-          <LoveButton
+        {:else if col === 'artist'}
+          <ArtistLinks record={a} role="albumartist" class="block truncate" />
+        {:else if col === 'rating'}
+          <Rating
             id={a.id}
-            size="sm"
-            bind:starred={() => starredBy[a.id] ?? a.starred ?? false, (v) => (starredBy[a.id] = v)}
+            bind:rating={() => ratingBy[a.id] ?? a.rating ?? 0, (v) => (ratingBy[a.id] = v)}
           />
-          <ActionMenu
-            items={() =>
-              albumMenu(a, {
-                starred: starredBy[a.id] ?? a.starred,
-                onStar: (v) => (starredBy[a.id] = v),
-              })}
-          />
-        </div>
-      {/if}
-    {/snippet}
-  </DataTable>
-{/if}
+        {:else if col === 'actions'}
+          <div class="flex items-center justify-end gap-1">
+            <LoveButton
+              id={a.id}
+              size="sm"
+              bind:starred={
+                () => starredBy[a.id] ?? a.starred ?? false, (v) => (starredBy[a.id] = v)
+              }
+            />
+            <ActionMenu
+              items={() =>
+                albumMenu(a, {
+                  starred: starredBy[a.id] ?? a.starred,
+                  onStar: (v) => (starredBy[a.id] = v),
+                })}
+            />
+          </div>
+        {/if}
+      {/snippet}
+    </DataTable>
+  {/if}
 
-{#if albums.data.length}
-  <Pagination
-    class="mt-10"
-    total={albums.total}
-    bind:page={() => params.page, (v) => (params.page = v)}
-    bind:perPage={() => params.perPage, (v) => (params.perPage = v)}
-    perPageOptions={[30, 60, 90, 120]}
-  />
-{/if}
+  {#if albums.data.length}
+    <Pagination
+      class="mt-10"
+      total={albums.total}
+      bind:page={() => params.page, (v) => (params.page = v)}
+      bind:perPage={() => params.perPage, (v) => (params.perPage = v)}
+      {pageSize}
+      perPageOptions={[30, 60, 90, 120]}
+    />
+  {/if}
+</div>

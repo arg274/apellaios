@@ -1,3 +1,14 @@
+<script lang="ts" module>
+  import { autoFillColumns } from '$lib/utils/grid'
+
+  /**
+   * The columns this grid shows at `width` px, for lists that page by whole rows. Mirrors the
+   * classes below: 150px tracks, 170px from the sm breakpoint, 20px gutters.
+   */
+  export const albumGridColumns = (width: number) =>
+    autoFillColumns(width, matchMedia('(min-width: 40rem)').matches ? 170 : 150, 20)
+</script>
+
 <script lang="ts">
   import type { Album } from '$lib/api/types'
   import { cn } from '$lib/utils/cn'
