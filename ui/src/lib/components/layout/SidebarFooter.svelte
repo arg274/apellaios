@@ -4,7 +4,7 @@
   import config from '$lib/config'
   import { getAvatarUrl } from '$lib/api/subsonic'
   import { t } from '$lib/i18n/index.svelte'
-  import { href } from '$lib/nav.svelte'
+  import { navigate } from '$lib/nav.svelte'
   import { activity } from '$lib/state/activity.svelte'
   import { auth } from '$lib/state/auth.svelte'
   import { ui } from '$lib/state/ui.svelte'
@@ -49,7 +49,7 @@
         <DropdownMenu.Item
           class={menuItem}
           onSelect={() => {
-            location.hash = href('/personal')
+            void navigate('/personal')
             onnavigate?.()
           }}
         >

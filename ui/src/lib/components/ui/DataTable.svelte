@@ -4,6 +4,7 @@
   import { ArrowDown, ArrowUp } from '@lucide/svelte'
   import type { Snippet } from 'svelte'
   import type { SortOrder } from '$lib/api/rest'
+  import { navigate } from '$lib/nav.svelte'
   import { cn } from '$lib/utils/cn'
   import Checkbox from './Checkbox.svelte'
   import type { DataColumn } from './dataTable'
@@ -53,7 +54,8 @@
 
   function activate(row: T, e: MouseEvent) {
     if ((e.target as HTMLElement).closest('a,button,input,[role=checkbox],[role=switch]')) return
-    if (rowHref) location.hash = rowHref(row)
+    // Through the router: a hash it didn't set itself makes SvelteKit reload the whole page
+    if (rowHref) void navigate(rowHref(row))
     else onrowclick?.(row)
   }
 </script>

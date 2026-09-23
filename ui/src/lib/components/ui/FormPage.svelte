@@ -4,6 +4,7 @@
   import { ChevronLeft } from '@lucide/svelte'
   import type { Snippet } from 'svelte'
   import { t } from '$lib/i18n/index.svelte'
+  import { navigate } from '$lib/nav.svelte'
   import { toast } from '$lib/state/toast.svelte'
   import PageTitle from '$lib/components/layout/PageTitle.svelte'
   import Button from './Button.svelte'
@@ -53,7 +54,7 @@
       const result = await onsave()
       if (result !== false) {
         toast.success(t('ra.notification.updated', { smart_count: 1 }))
-        if (!stayAfterSave) location.hash = backHref
+        if (!stayAfterSave) void navigate(backHref)
       }
     } catch (err) {
       toast.error((err as Error).message || t('ra.notification.http_error'))
@@ -66,7 +67,7 @@
     try {
       await ondelete?.()
       toast.success(t('ra.notification.deleted', { smart_count: 1 }))
-      location.hash = backHref
+      void navigate(backHref)
     } catch (err) {
       toast.error((err as Error).message || t('ra.notification.http_error'))
     }
