@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="description" content="Apellaios Music Server - {{.Version}}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="apple-touch-icon" sizes="180x180" href="%sveltekit.assets%/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="%sveltekit.assets%/favicon-32x32.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="%sveltekit.assets%/android-chrome-192x192.png"
+    />
+    <link rel="icon" type="image/png" sizes="16x16" href="%sveltekit.assets%/favicon-16x16.png" />
+    <link rel="mask-icon" href="%sveltekit.assets%/safari-pinned-tab.svg" color="#0a84ff" />
+    <link rel="manifest" href="%sveltekit.assets%/manifest.webmanifest" />
+    <meta name="msapplication-TileColor" content="#1f1f1f" />
+    <meta name="theme-color" content="#1f1f1f" />
+    <meta property="og:site_name" content="Apellaios" />
+    <meta property="og:url" content="{{ .ShareURL }}" />
+    <meta property="og:title" content="{{ .ShareDescription }}" />
+    <meta property="og:image" content="{{ .ShareImageURL }}" />
+    <meta property="og:image:width" content="300" />
+    <meta property="og:image:height" content="300" />
+    <title>Apellaios</title>
+    <!-- Filled in by server/serve_index.go. In `vite dev` these stay unrendered template
+         actions, the scripts fail to parse, and src/lib/config.ts falls back to its defaults. -->
+    <script>
+      window.__APP_CONFIG__ = {{ .AppConfig }}
+    </script>
+    <script>
+      window.__SHARE_INFO__ = {{ .ShareInfo }}
+    </script>
+    <script>
+      // Resolve the colour scheme before first paint so a light-mode user never sees a dark flash
+      try {
+        var s = JSON.parse(localStorage.getItem('nd-settings') || '{}')
+        var scheme = s.colorScheme || 'auto'
+        var dark =
+          scheme === 'dark' ||
+          (scheme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.classList.toggle('dark', dark)
+      } catch (e) {
+        document.documentElement.classList.add('dark')
+      }
+    </script>
+    %sveltekit.head%
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div style="display: contents">%sveltekit.body%</div>
+  </body>
+</html>

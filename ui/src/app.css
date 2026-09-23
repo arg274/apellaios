@@ -1,0 +1,394 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+
+/*
+ * Bengali script in Tiro Bangla. Declared here rather than via the package CSS so it carries a
+ * unicode-range: the font is only downloaded, and only used, for Bengali code points, while Latin
+ * text stays in Geist.
+ */
+@font-face {
+  font-family: 'Tiro Bangla';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    url('../node_modules/@fontsource/tiro-bangla/files/tiro-bangla-bengali-400-normal.woff2')
+      format('woff2'),
+    url('../node_modules/@fontsource/tiro-bangla/files/tiro-bangla-bengali-400-normal.woff')
+      format('woff');
+  unicode-range:
+    U+0951-0952, U+0964-0965, U+0980-09FE, U+1CD0, U+1CD2, U+1CD5-1CD6, U+1CD8, U+1CE1, U+1CEA,
+    U+1CED, U+1CF2, U+1CF5-1CF7, U+200C-200D, U+20B9, U+25CC, U+A8F1;
+}
+@font-face {
+  font-family: 'Tiro Bangla';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    url('../node_modules/@fontsource/tiro-bangla/files/tiro-bangla-bengali-400-italic.woff2')
+      format('woff2'),
+    url('../node_modules/@fontsource/tiro-bangla/files/tiro-bangla-bengali-400-italic.woff')
+      format('woff');
+  unicode-range:
+    U+0951-0952, U+0964-0965, U+0980-09FE, U+1CD0, U+1CD2, U+1CD5-1CD6, U+1CD8, U+1CE1, U+1CEA,
+    U+1CED, U+1CF2, U+1CF5-1CF7, U+200C-200D, U+20B9, U+25CC, U+A8F1;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Design tokens, modelled on the Apple Music web player's system colours. Components use the
+ * semantic Tailwind names (bg-page, text-label-2, bg-glass...) and never raw colours, so the
+ * light/dark schemes and theme presets only ever touch this file and ThemeRoot.svelte.
+ */
+:root {
+  --accent: #007aff;
+  --page: #ffffff;
+  --label: rgb(0 0 0 / 0.88);
+  --label-2: rgb(0 0 0 / 0.56);
+  --label-3: rgb(0 0 0 / 0.48);
+  --fill: rgb(0 0 0 / 0.1);
+  --fill-2: rgb(0 0 0 / 0.05);
+  --divider: rgb(0 0 0 / 0.15);
+  /* Sidebar edges: Apple's fixed hairline, which page tinting never touches */
+  --sidebar-edge: rgb(0 0 0 / 0.05);
+  --hover: rgb(0 0 0 / 0.05);
+  --row-alt: rgb(0 0 0 / 0.02);
+  --selected: rgb(0 0 0 / 0.08);
+  --glass: rgb(245 245 247 / 0.55);
+  --glass-strong: rgb(246 246 246 / 0.72);
+  --glass-stroke: rgb(0 0 0 / 0.05);
+  --glass-rim: #000000;
+  --glass-rim-alpha: 0.05;
+  --glass-shadow: rgb(0 0 0 / 0.1);
+  --control: rgb(118 118 128 / 0.12);
+  --control-selected: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f5f5f7;
+  --danger: #ff3b30;
+  /* Red text that stays above 4.5:1 on a faint red fill (soft destructive buttons) */
+  --danger-text: #c00010;
+  --success: #34c759;
+  --warning: #ff9500;
+  --scrim: rgb(0 0 0 / 0.35);
+  --on-accent: #ffffff;
+  --shelf: #f5f5f7;
+  /* Tracklist row separators (Apple's vibrant label divider) */
+  --row-divider: rgb(0 0 0 / 0.11);
+  /* Artwork-derived tint for album/artist/playlist pages; transparent elsewhere */
+  --tint: transparent;
+  color-scheme: light;
+}
+
+:root.dark {
+  --accent: #0a84ff;
+  --page: #1f1f1f;
+  --label: rgb(255 255 255 / 0.92);
+  --label-2: rgb(255 255 255 / 0.64);
+  --label-3: rgb(255 255 255 / 0.4);
+  --fill: rgb(255 255 255 / 0.1);
+  --fill-2: rgb(255 255 255 / 0.05);
+  --divider: rgb(255 255 255 / 0.1);
+  --sidebar-edge: rgb(255 255 255 / 0.05);
+  --hover: rgb(255 255 255 / 0.06);
+  --row-alt: rgb(255 255 255 / 0.015);
+  --selected: rgb(255 255 255 / 0.08);
+  --glass: rgb(38 38 40 / 0.6);
+  --glass-strong: rgb(40 40 42 / 0.72);
+  --glass-stroke: rgb(255 255 255 / 0.2);
+  --glass-rim: #ffffff;
+  --glass-rim-alpha: 0.2;
+  --glass-shadow: rgb(0 0 0 / 0.2);
+  --control: rgb(118 118 128 / 0.24);
+  --control-selected: #636366;
+  --surface: #2c2c2e;
+  --surface-2: #232325;
+  --danger: #ff453a;
+  --danger-text: #ff6961;
+  --success: #32d74b;
+  --warning: #ff9f0a;
+  --scrim: rgb(0 0 0 / 0.45);
+  --shelf: #1a1a1a;
+  --row-divider: rgb(255 255 255 / 0.13);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans: 'Geist Variable', 'Tiro Bangla', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', 'Tiro Bangla', ui-monospace, monospace;
+
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-page: var(--page);
+  --color-label: var(--label);
+  --color-label-2: var(--label-2);
+  --color-label-3: var(--label-3);
+  --color-fill: var(--fill);
+  --color-fill-2: var(--fill-2);
+  --color-divider: var(--divider);
+  --color-sidebar-edge: var(--sidebar-edge);
+  --color-hover: var(--hover);
+  --color-row-alt: var(--row-alt);
+  --color-selected: var(--selected);
+  --color-glass: var(--glass);
+  --color-glass-strong: var(--glass-strong);
+  --color-glass-stroke: var(--glass-stroke);
+  --color-control: var(--control);
+  --color-control-selected: var(--control-selected);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-danger: var(--danger);
+  --color-danger-text: var(--danger-text);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-scrim: var(--scrim);
+  --color-shelf: var(--shelf);
+  --color-row-divider: var(--row-divider);
+
+  /* Apple's type ramp (sizes/line heights), used as text-title-1 etc. */
+  --text-large-title: 26px;
+  --text-large-title--line-height: 1.23;
+  --text-title-1: 22px;
+  --text-title-1--line-height: 1.18;
+  --text-title-2: 17px;
+  --text-title-2--line-height: 1.29;
+  --text-title-3: 15px;
+  --text-title-3--line-height: 1.33;
+  --text-body: 13px;
+  --text-body--line-height: 1.23;
+  --text-callout: 12px;
+  --text-callout--line-height: 1.25;
+  --text-subhead: 11px;
+  --text-subhead--line-height: 1.27;
+  --text-footnote: 10px;
+  --text-footnote--line-height: 1.3;
+
+  --radius-art: 6px;
+  --radius-art-lg: 10px;
+
+  --ease-apple: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --ease-spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+}
+
+@layer base {
+  html {
+    background: var(--page);
+    color: var(--label);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Apple's 13/16 body text. It must live on body, not html: Tailwind's spacing is rem-based
+     and a smaller root font would shrink every padding and height with it. */
+  body {
+    font-size: 13px;
+    line-height: 16px;
+    min-height: 100dvh;
+    overscroll-behavior-y: none;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--accent) 45%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* Hairline scrollbars that stay out of the way, like macOS overlay scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--fill) transparent;
+  }
+}
+
+@layer components {
+  /*
+   * Liquid glass, with the values of music.apple.com's .chrome-player: a translucent fill with
+   * saturate(220%) blur(16px) and a soft drop shadow, plus a 0.5px inset rim on ::after.
+   *
+   * The material sits on the element itself rather than on a ::before layer. A layer needs
+   * z-index juggling (isolation or raised children) to stay behind the content, and depending on
+   * the browser that either cut the blur off from the page or hid bare text nodes. On the element
+   * there is nothing to stack, and the blur always samples what is behind it. Nothing on the
+   * element or its ancestors may use filter, opacity < 1, mask or mix-blend-mode, which would
+   * confine the blur.
+   */
+  .glass,
+  .glass-menu {
+    position: relative;
+  }
+  .glass {
+    background: var(--glass);
+    backdrop-filter: saturate(220%) blur(16px);
+    -webkit-backdrop-filter: saturate(220%) blur(16px);
+    box-shadow: 0 10px 40px var(--glass-shadow);
+  }
+  .glass::after,
+  .glass-menu::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow:
+      inset 0.5px 0.5px 0 var(--glass-rim),
+      inset 0.5px -0.5px 0 var(--glass-rim),
+      inset -0.5px 0.5px 0 var(--glass-rim),
+      inset -0.5px -0.5px 0 var(--glass-rim);
+    opacity: var(--glass-rim-alpha);
+  }
+
+  /*
+   * Menus, popovers, dialogs: Apple's contextual-menu material, a denser fill with a heavier blur,
+   * a 1px inner highlight and a deeper shadow.
+   */
+  .glass-menu {
+    background: var(--glass-strong);
+    backdrop-filter: blur(60px) saturate(210%);
+    -webkit-backdrop-filter: blur(60px) saturate(210%);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.12),
+      0 8px 40px rgb(0 0 0 / 0.25);
+  }
+
+  /* Sidebar glass: no drop shadow, just the material, with a hairline edge */
+  .glass-sidebar {
+    background: var(--glass);
+    backdrop-filter: saturate(2.2) blur(16px);
+    -webkit-backdrop-filter: saturate(2.2) blur(16px);
+  }
+
+  /* Artwork: 0.5px inner hairline blended plus-lighter, soft shadow; Apple's lockup look */
+  .artwork-frame {
+    position: relative;
+    overflow: hidden;
+    background: var(--art-bg, var(--fill-2));
+  }
+  .artwork-frame::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 0.12);
+    mix-blend-mode: plus-lighter;
+    pointer-events: none;
+  }
+  :root:not(.dark) .artwork-frame::after {
+    box-shadow: inset 0 0 0 0.5px rgb(0 0 0 / 0.1);
+    mix-blend-mode: normal;
+  }
+
+  /*
+   * Artwork-tinted pages, as on music.apple.com: the whole app sits on one flat colour from the
+   * artwork (--tint, Apple's --joe-color) and the secondary text blends with it. The blends are
+   * Apple's: in dark mode grey + tint (plus-lighter), in light mode a darkened tint.
+   */
+  .tinted {
+    --page: var(--tint);
+    --shelf: rgb(from var(--tint) calc(r - 10) calc(g - 10) calc(b - 10));
+  }
+  .dark .tinted {
+    --label-2: rgb(from var(--tint) calc(r + 161) calc(g + 161) calc(b + 166));
+    --label-3: rgb(from var(--tint) calc(r + 110) calc(g + 110) calc(b + 115));
+    --divider: color-mix(in oklab, var(--tint), white 18%);
+  }
+  :root:not(.dark) .tinted {
+    --label-2: color-mix(in oklab, var(--tint) 30%, black);
+    --label-3: color-mix(in oklab, var(--tint) 35%, black);
+    --divider: color-mix(in oklab, var(--tint), black 30%);
+    --fill-2: rgb(0 0 0 / 0.06);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@utility animate-pop {
+  animation: pop-in 140ms var(--ease-apple);
+  transform-origin: var(
+    --bits-dropdown-menu-content-transform-origin,
+    var(
+      --bits-context-menu-content-transform-origin,
+      var(
+        --bits-popover-content-transform-origin,
+        var(--bits-select-content-transform-origin, center)
+      )
+    )
+  );
+}
+
+@utility animate-fade {
+  animation: fade-in 180ms var(--ease-apple);
+}
+
+@utility animate-slide-up {
+  animation: slide-up 260ms var(--ease-apple);
+}
+
+@utility animate-sheet {
+  animation: sheet-up 380ms var(--ease-spring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass::before,
+  .glass-menu::before,
+  .glass-sidebar {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--surface-2);
+  }
+}

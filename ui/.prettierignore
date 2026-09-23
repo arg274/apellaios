@@ -1,0 +1,6 @@
+build
+.svelte-kit
+node_modules
+public
+package-lock.json
+src/lib/i18n/en.json

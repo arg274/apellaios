@@ -1,7 +1,7 @@
 node_modules
 .eslintcache
+.svelte-kit
 
 build/*
 !build/.gitkeep
 /coverage/
-public/3rdparty/workbox
