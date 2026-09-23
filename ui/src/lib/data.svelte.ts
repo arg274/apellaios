@@ -175,6 +175,39 @@ export class UrlListParams {
   }
 }
 
+interface LoadedRows<T> {
+  /** The query without paging, serialised */
+  key: string
+  /** Offset of rows[0] in the full list */
+  start: number
+  rows: T[]
+  total: number
+  /** ListController's reload counter when fetched */
+  version: number
+}
+
+/**
+ * Adds a freshly fetched page to what was loaded before: merged into one block when it is for the
+ * same query and overlaps or adjoins it (its rows winning), otherwise replacing it.
+ */
+export function mergeLoaded<T>(prev: LoadedRows<T> | null, next: LoadedRows<T>): LoadedRows<T> {
+  if (
+    !prev ||
+    prev.key !== next.key ||
+    prev.version !== next.version ||
+    next.start > prev.start + prev.rows.length ||
+    prev.start > next.start + next.rows.length
+  ) {
+    return next
+  }
+  const start = Math.min(prev.start, next.start)
+  const end = Math.max(prev.start + prev.rows.length, next.start + next.rows.length)
+  const rows = new Array<T>(end - start)
+  prev.rows.forEach((r, i) => (rows[prev.start - start + i] = r))
+  next.rows.forEach((r, i) => (rows[next.start - start + i] = r))
+  return { ...next, start, rows }
+}
+
 /** A paged list of a REST resource, refetching as its params change */
 export class ListController<R extends ResourceName> {
   data = $state.raw<ResourceMap[R][]>([])
@@ -182,6 +215,13 @@ export class ListController<R extends ResourceName> {
   loading = $state(true)
   error = $state.raw<Error | null>(null)
   #version = $state(0)
+  /**
+   * The rows fetched so far for the current query, one contiguous block from `start`: pages that
+   * overlap or adjoin merge into it. A page that falls entirely within it (the same page made
+   * smaller or larger again, as when a grid loses or regains a column) is sliced out without a
+   * request. A new query or a reload starts it afresh.
+   */
+  #loaded: LoadedRows<ResourceMap[R]> | null = null
 
   constructor(
     resource: R,
@@ -190,9 +230,28 @@ export class ListController<R extends ResourceName> {
   ) {
     $effect(() => {
       const p = params()
-      void this.#version
+      const version = this.#version
       if (!p || p.enabled === false) {
         this.loading = false
+        return
+      }
+      const { page = 1, perPage = 25, ...query } = p
+      const key = JSON.stringify(query)
+      const start = (page - 1) * perPage
+      const loaded = this.#loaded
+      if (
+        loaded &&
+        loaded.key === key &&
+        loaded.version === version &&
+        start >= loaded.start &&
+        Math.min(start + perPage, loaded.total) <= loaded.start + loaded.rows.length
+      ) {
+        untrack(() => {
+          this.data = loaded.rows.slice(start - loaded.start, start - loaded.start + perPage)
+          this.total = loaded.total
+          this.error = null
+          this.loading = false
+        })
         return
       }
       // Serialise so a params object recreated with equal content doesn't refetch
@@ -203,6 +262,7 @@ export class ListController<R extends ResourceName> {
         getList(resource, { ...JSON.parse(snapshot), signal: controller.signal })
           .then(({ data, total }) => {
             if (controller.signal.aborted) return
+            this.#loaded = mergeLoaded(this.#loaded, { key, start, rows: data, total, version })
             this.data = data
             this.total = total
             this.error = null
@@ -240,8 +300,11 @@ export class ListController<R extends ResourceName> {
 
   /** Replaces one loaded row in place (optimistic updates) */
   patch(id: string, changes: Partial<ResourceMap[R]>) {
-    this.data = this.data.map((r) =>
-      (r as { id: string }).id === id ? { ...r, ...changes } : r,
-    ) as ResourceMap[R][]
+    const apply = (rows: ResourceMap[R][]) =>
+      rows.map((r) =>
+        (r as { id: string }).id === id ? { ...r, ...changes } : r,
+      ) as ResourceMap[R][]
+    this.data = apply(this.data)
+    if (this.#loaded) this.#loaded.rows = apply(this.#loaded.rows)
   }
 }
