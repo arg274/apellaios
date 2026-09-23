@@ -411,6 +411,16 @@
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
+/*
+ * Tint changes crossfade the whole window through a view transition (see ui.svelte.ts). The
+ * default 250ms reads as a flash for a full-window colour change; this is closer to Apple's fade.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 450ms;
+  animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
   *::after {
     animation-duration: 1ms !important;
     transition-duration: 1ms !important;

@@ -1,3 +1,4 @@
+import { flushSync, untrack } from 'svelte'
 import type { Album, Artist, Playlist, Song } from '$lib/api/types'
 import type { PlaylistAddition } from '$lib/api/native'
 import { pageTint, tintIsDark } from '$lib/utils/color'
@@ -49,13 +50,50 @@ class UiState {
     return pageTint(this.tint, this.isDark)
   }
 
-  /** Sets the page tint for the lifetime of the calling effect */
+  /** How many mounted pages currently tint the window */
+  #tintClaims = 0
+
+  /**
+   * Tints the window while the calling component is mounted. `color` returns undefined while the
+   * record is still loading, which keeps whatever tint is showing, so going from one tinted page
+   * to another never flashes the plain background in between; null means the record has no tint.
+   */
   useTint(color: () => string | null | undefined) {
     $effect(() => {
-      this.tint = color() ?? null
+      const next = color()
+      if (next !== undefined) untrack(() => this.#fadeTo(next))
+    })
+    $effect(() => {
+      this.#tintClaims++
       return () => {
-        this.tint = null
+        this.#tintClaims--
+        // The next page mounts just after this one unmounts: give it a tick to claim the tint
+        setTimeout(() => {
+          if (this.#tintClaims === 0) this.#fadeTo(null)
+        })
       }
+    })
+  }
+
+  /**
+   * Crossfades the whole window to the new tint with a view transition, which also covers the
+   * scheme flip a dark tint forces. Without support (or with reduced motion) it switches at once,
+   * and the page background still eases on its own.
+   */
+  #fadeTo(next: string | null) {
+    if (next === this.tint) return
+    const instant =
+      !document.startViewTransition ||
+      document.visibilityState !== 'visible' ||
+      matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (instant) {
+      this.tint = next
+      return
+    }
+    document.startViewTransition(() => {
+      this.tint = next
+      // Render the new tint (and ThemeRoot's scheme class) before the browser snapshots it
+      flushSync()
     })
   }
 }

@@ -56,7 +56,8 @@
   )
 
   const p = $derived(playlist.value?.id === id ? playlist.value : undefined)
-  ui.useTint(() => p?.dominantColor)
+  // undefined while loading keeps the previous page's tint until this one knows its own
+  ui.useTint(() => (p ? (p.dominantColor ?? null) : playlist.error ? null : undefined))
 
   const editable = $derived(!!p && canChangeTracks(p))
   const writable = $derived(!!p && isWritable(p.ownerId))

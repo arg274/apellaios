@@ -57,7 +57,8 @@
   )
 
   const a = $derived(artist.value?.id === id ? artist.value : undefined)
-  ui.useTint(() => a?.dominantColor)
+  // undefined while loading keeps the previous page's tint until this one knows its own
+  ui.useTint(() => (a ? (a.dominantColor ?? null) : artist.error ? null : undefined))
 
   /**
    * Top songs come from Last.fm when available; otherwise the artist's most played tracks in the

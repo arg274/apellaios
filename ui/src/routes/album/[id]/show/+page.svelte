@@ -59,7 +59,8 @@
   )
 
   const a = $derived(album.value?.id === id ? album.value : undefined)
-  ui.useTint(() => a?.dominantColor)
+  // undefined while loading keeps the previous page's tint until this one knows its own
+  ui.useTint(() => (a ? (a.dominantColor ?? null) : album.error ? null : undefined))
 
   // Optimistic star/rating changes, keyed by album so navigating away starts clean
   let starredBy = $state<Record<string, boolean>>({})
