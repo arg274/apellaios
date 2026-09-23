@@ -24,7 +24,8 @@
   class={cn('flex-col border-l border-sidebar-edge glass-sidebar', className)}
   aria-label={t('ui.upNext')}
 >
-  <header class="flex h-[72px] shrink-0 items-center justify-between gap-2 px-5">
+  <!-- Lowered so "Up Next" lines up with the page titles' cap height, 39px from the top -->
+  <header class="mt-2.5 flex h-[72px] shrink-0 items-center justify-between gap-2 px-5">
     <h2 class="text-title-2 font-bold">{t('ui.upNext')}</h2>
     <div class="flex items-center gap-1.5">
       <IconButton

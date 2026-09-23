@@ -73,9 +73,9 @@
   class={cn('flex h-full w-[260px] flex-col border-r border-sidebar-edge glass-sidebar', className)}
   aria-label={t('ui.sidebar')}
 >
-  <!-- Measured on music.apple.com: a 72px logo block inset 8px, 20px side padding, a 20px-tall
-       wordmark whose top sits 32px from the sidebar's top -->
-  <div class="mt-2 ml-2 h-[72px] shrink-0 px-5 pt-6">
+  <!-- After music.apple.com's 72px logo block inset 8px with 20px side padding, but lowered 10px so
+       the 20px-tall logo is centred on the page title row (52px from the top) -->
+  <div class="mt-2 ml-2 h-[82px] shrink-0 px-5 pt-[34px]">
     <a href={href('/')} class="flex h-5 items-center gap-1.5 text-label" onclick={onnavigate}>
       <span class="flex size-5 items-center justify-center rounded-[5px] bg-accent text-on-accent">
         <AudioLines class="size-3.5" strokeWidth={2.75} />
