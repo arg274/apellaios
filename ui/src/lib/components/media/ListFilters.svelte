@@ -88,7 +88,7 @@
 <Popover.Root>
   <Popover.Trigger
     class={cn(
-      'inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-callout font-medium transition-colors',
+      'inline-flex h-7 items-center gap-1.5 rounded-lg px-3 text-callout font-medium transition-colors',
       active ? 'bg-accent text-on-accent' : 'bg-fill text-label hover:bg-fill/80',
     )}
   >

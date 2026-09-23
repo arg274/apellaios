@@ -10,12 +10,12 @@
   }: { label: string; icon?: Component; active?: boolean; onclick: () => void } = $props()
 </script>
 
-<!-- A toggleable filter pill, filled with the key colour while active -->
+<!-- A toggleable filter, shaped like the selects beside it and filled with the key colour while active -->
 <button
   type="button"
   aria-pressed={active}
   class={cn(
-    'inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-callout font-medium transition-colors [&_svg]:size-3.5',
+    'inline-flex h-7 items-center gap-1.5 rounded-lg px-3 text-callout font-medium transition-colors [&_svg]:size-3.5',
     active ? 'bg-accent text-on-accent' : 'bg-fill text-label hover:bg-fill/80',
   )}
   {onclick}

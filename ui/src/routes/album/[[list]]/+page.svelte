@@ -193,6 +193,7 @@
         label={params.order === 'ASC' ? t('ui.ascending') : t('ui.descending')}
         variant="filled"
         size="sm"
+        class="rounded-lg"
         onclick={() => params.setSort(params.sort, params.order === 'ASC' ? 'DESC' : 'ASC')}
       >
         {#if params.order === 'ASC'}<ArrowUpNarrowWide />{:else}<ArrowDownWideNarrow />{/if}
