@@ -51,7 +51,13 @@
     <ChevronsUpDown class="size-3.5 shrink-0 text-label-2" />
   </Select.Trigger>
   <Select.Portal>
-    <Select.Content class={cn(menuContent, 'max-h-80')} sideOffset={4} collisionPadding={8}>
+    <!-- At least as wide as the select box (and the menus' usual 200px), aligned to its left edge -->
+    <Select.Content
+      class={cn(menuContent, 'max-h-80 min-w-[max(200px,var(--bits-select-anchor-width))]')}
+      align="start"
+      sideOffset={4}
+      collisionPadding={8}
+    >
       <Select.Viewport>
         {#each options as option (option.value)}
           <Select.Item
